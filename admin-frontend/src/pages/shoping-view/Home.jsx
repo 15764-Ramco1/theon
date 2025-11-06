@@ -136,22 +136,30 @@ const ShoppingHome = () => {
                     ))
                 }
             </div>
-            <section className='py-12'>
+            <section className='py-12 bg-[#f9f9f9]' style={{ backgroundColor: '#f9f9f9' }}>
                 <div className='container mx-auto px-4'>
-                    <h2 className='text-3xl font-bold text-center mb-8'>Featured Product</h2>
-                </div>
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center place-items-center'>
-                    {
-                        products && products.length > 0 && products.slice(0, 10).map((product, index) => (
-                            <ShoppingViewProductTile 
-                                key={index}
-                                product={product} 
-                                handleGetProductDetails={handleGetProductDetails} 
-                                handleAddToCart={handleAddToCart} 
-                                isLoading={isAddToCartUpdateLoading} 
-                            />
-                        ))
-                    }
+                    <h2 className='text-4xl font-bold text-center mb-12 text-black'>Featured Products</h2>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center'>
+                        {
+                            products && products.length > 0 && products.slice(0, 8).map((product, index) => (
+                                <div
+                                    key={index}
+                                    className='animate-fade-in-up opacity-0'
+                                    style={{
+                                        animationDelay: `${index * 100 + 400}ms`,
+                                        animationFillMode: 'forwards'
+                                    }}
+                                >
+                                    <ShoppingViewProductTile
+                                        product={product}
+                                        handleGetProductDetails={handleGetProductDetails}
+                                        handleAddToCart={handleAddToCart}
+                                        isLoading={isAddToCartUpdateLoading}
+                                    />
+                                </div>
+                            ))
+                        }
+                    </div>
                 </div>
             </section>
             <ProductDetailsDialogue 
