@@ -241,20 +241,20 @@ const ProductPreviewFull = ({ product ,user}) => {
                                     
                                     <div className="w-full justify-start gap-y-1 items-center flex flex-row space-x-2">
                                         {/* Sale Price */}
-										{p.salePrice > 0 && <div className="text-xs md:text-sm font-light md:font-medium font-kumbsan text-slate-700">
-											<span className="text-sm md:text-base font-bold text-gray-900">
+										{p.salePrice > 0 && <div className="text-xs md:text-sm font-light md:font-medium font-kumbsan">
+											<span className="text-sm md:text-base font-bold text-black">
 												₹{formattedSalePrice(p.salePrice)}
 											</span>
                                         </div>}
-                                        
+
                                         {/* Regular Price */}
-                                        <div className="text-xs md:text-lg font-light md:font-medium font-kumbsan text-slate-700 hover:animate-bounce">
+                                        <div className="text-xs md:text-lg font-light md:font-medium font-kumbsan">
                                             {p.salePrice && p.salePrice > 0 ? (
-                                                <span className="line-through text-gray-500">
+                                                <span className="line-through" style={{ color: '#666666' }}>
                                                     ₹{formattedSalePrice(p.price)}
                                                 </span>
                                             ) : (
-                                                <span className="text-xs md:text-lg font-normal md:font-bold font-kumbsan">
+                                                <span className="text-xs md:text-lg font-normal md:font-bold font-kumbsan text-black">
                                                     ₹{formattedSalePrice(p.price)}
                                                 </span>
                                             )}
