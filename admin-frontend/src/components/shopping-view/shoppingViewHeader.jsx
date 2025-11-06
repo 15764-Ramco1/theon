@@ -67,11 +67,11 @@ const HeaderRightContent = ({user,openCardSheet,setOpenCartSheet})=>{
         <Sheet open = {openCardSheet} onOpenChange={()=>{
             setOpenCartSheet(false);
         }}>
-            <Button onClick = {()=> setOpenCartSheet(true)} variant = "outline" size = "icon" className = "relative flex-row" >
+            <Button onClick = {()=> setOpenCartSheet(true)} variant = "outline" size = "icon" className = "relative flex-row hover-scale border-black text-black hover:bg-black hover:text-white" >
                 <ShoppingCart className='h-10 w-10'/>
                 {
                     cartItems?.items?.length > 0 && (
-                        <Badge  className='absolute w-1 h-4 top-[-5px] right-[-2px] items-center justify-center'>
+                        <Badge  className='absolute w-1 h-4 top-[-5px] right-[-2px] items-center justify-center bg-black text-white'>
                             <span className='text-[15px]'>{cartItems?.items?.length}</span>
                         </Badge>
                     )
