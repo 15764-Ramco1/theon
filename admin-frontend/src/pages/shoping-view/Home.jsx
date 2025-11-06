@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import ProductDetailsDialogue from '@/components/shopping-view/ProductDetails';
 import { getFeatureImage } from '@/store/common-slice';
 import Carousel from './Carousel';
+import HeroBanner from '@/components/shopping-view/HeroBanner';
+import FeatureIcons from '@/components/shopping-view/FeatureIcons';
 const ShoppingHome = () => {
     const {user} = useSelector(state => state.auth);
     const{featuresList} = useSelector(state => state.common);
