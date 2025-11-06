@@ -138,18 +138,18 @@ const Footer = () => {
 						</div>
 						</div>
                     {/* Online Shopping */}
-                    <div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
-                        <h1 className="text-lg font-bold mb-4 text-gray-800">Info</h1>
+                    <div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-700 space-y-3">
+                        <h1 className="text-lg font-bold mb-4 text-white">Info</h1>
                         <ul className="text-sm space-y-2 mt-3">
-							<h3 className="text-sm font-bold text-gray-600">Owner: <span className="font-normal text-xs">On U</span></h3>
-							<div className="flex flex-row justify-start space-x-1 cursor-pointer hover:text-indigo-400 items-center">
-								<Link to={'/contact'}><h2 className="text-xl font-bold">GET DIRECTION</h2></Link>
-								<ArrowUp className="rotate-45" />
+							<h3 className="text-sm font-bold text-gray-300">Owner: <span className="font-normal text-xs text-gray-400">On U</span></h3>
+							<div className="flex flex-row justify-start space-x-1 cursor-pointer hover:text-gray-300 items-center">
+								<Link to={'/contact'}><h2 className="text-xl font-bold text-white">GET DIRECTION</h2></Link>
+								<ArrowUp className="rotate-45 text-white" />
 							</div>
-							<p className="text-sm text-gray-600 font-bold">Company: <span className="font-normal text-xs">On U</span></p>
-							<p className="text-sm text-gray-600 font-bold">Address: <span className="font-normal text-xs">{termsAndCondition?.businessAddress}</span></p>
-							<p className="text-sm text-gray-600 font-bold">Phone: <span className="font-normal text-xs">{termsAndCondition?.phoneNumber}</span></p>
-							<a href={`mailto:${termsAndCondition?.contactInfo}`} className="text-sm hover:underline font-bold text-gray-600">Email: <span className="font-normal text-xs">{termsAndCondition?.contactInfo}</span></a>
+							<p className="text-sm text-gray-300 font-bold">Company: <span className="font-normal text-xs text-gray-400">On U</span></p>
+							<p className="text-sm text-gray-300 font-bold">Address: <span className="font-normal text-xs text-gray-400">{termsAndCondition?.businessAddress}</span></p>
+							<p className="text-sm text-gray-300 font-bold">Phone: <span className="font-normal text-xs text-gray-400">{termsAndCondition?.phoneNumber}</span></p>
+							<a href={`mailto:${termsAndCondition?.contactInfo}`} className="text-sm hover:underline font-bold text-gray-300">Email: <span className="font-normal text-xs text-gray-400">{termsAndCondition?.contactInfo}</span></a>
 						</ul>
                     </div>
 					<div className="md:border-r block sm:hidden lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
