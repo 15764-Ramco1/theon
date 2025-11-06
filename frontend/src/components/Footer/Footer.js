@@ -64,9 +64,9 @@ const Footer = () => {
     return (
         <div className="w-screen min-h-fit bg-black font-kumbsan" style={{ backgroundColor: '#000000' }}>
             <div className="w-full max-w-screen-2xl justify-self-center p-10 2xl:p-14 md:p-14 xl:p-14 py-10 max-h-fit">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 text-black border-b border-gray-200 pb-10">
-					<div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
-							<h1 className="text-lg font-bold mb-4 text-gray-800">SHOP</h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 text-white border-b border-gray-700 pb-10">
+					<div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-700 space-y-3">
+							<h1 className="text-lg font-bold mb-4 text-white">SHOP</h1>
 							<ul className="text-sm space-y-4 mt-3">
 								<ul className="text-sm space-y-2 mt-3 justify-start items-start flex flex-col w-full">
 									{
@@ -77,9 +77,9 @@ const Footer = () => {
 													e.stopPropagation();
 													handelSetQuery(gender?.Gender,'')
 												}} key={index}>
-													<h3 key={index} className="hover:underline cursor-pointer text-gray-600 font-bold">{gender?.Gender}</h3>
+													<h3 key={index} className="hover:underline cursor-pointer text-gray-300 font-bold">{gender?.Gender}</h3>
 													{
-														gender?.category && gender?.category.length > 0 && gender?.category.map((category,subCatIndex)=><li key={subCatIndex} onClick={()=> handelSetQuery(gender?.Gender,category?.title)} className="hover:underline cursor-pointer text-gray-600">{category?.title}</li>)
+														gender?.category && gender?.category.length > 0 && gender?.category.map((category,subCatIndex)=><li key={subCatIndex} onClick={()=> handelSetQuery(gender?.Gender,category?.title)} className="hover:underline cursor-pointer text-gray-400">{category?.title}</li>)
 													}
 												</div>
 											)
