@@ -6,46 +6,46 @@ import React from 'react'
 
 const ShoppingViewProductTile = ({product,handleGetProductDetails,handleAddToCart,isLoading}) => {
     return (
-        <Card className="w-full max-w-[250px] mx-auto">
+        <Card className="w-full max-w-[280px] mx-auto bg-white border border-[#e0e0e0] hover-lift cursor-pointer group" style={{ borderColor: '#e0e0e0' }}>
             <div onClick={() => handleGetProductDetails(product?._id)}>
-                <div className="relative">
-                    <img 
+                <div className="relative overflow-hidden rounded-t-lg">
+                    <img
                         src={product?.image}
                         alt={product?.title}
-                        className="w-full p-1 h-[200px] rounded-lg object-cover"
+                        className="w-full h-[200px] object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     {product?.totalStock <= 0 ? (
-                        <Badge>Out Of Stock</Badge>
+                        <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-700">Out Of Stock</Badge>
                     ) : (
                         <>
                             {product?.salePrice > 0 && (
-                                <Badge className="absolute top-2 ml-3 mt-2 bg-red-700 hover:bg-red-500 rounded-sm">Sale</Badge>
+                                <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-700 rounded-sm">Sale</Badge>
                             )}
                             {product?.totalStock <= 10 && (
-                                <Badge className="absolute top-2 ml-3 mt-2 bg-red-700 hover:bg-red-500 rounded-sm">
-                                    Only {product?.totalStock} items Left
+                                <Badge className="absolute top-2 left-2 bg-orange-600 hover:bg-orange-700 rounded-sm">
+                                    Only {product?.totalStock} left
                                 </Badge>
                             )}
                         </>
                     )}
                 </div>
-                <CardContent className="p-3 gap-2">
-                    <h2 className="text-lg font-bold">{product?.title}</h2>
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">
+                <CardContent className="p-4">
+                    <h2 className="text-lg font-bold mb-2 text-black line-clamp-2">{product?.title}</h2>
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm" style={{ color: '#666666' }}>
                             {categoryOptions[product?.category]}
                         </span>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-sm" style={{ color: '#666666' }}>
                             {brandOptions[product?.brand]}
                         </span>
                     </div>
-                    <div>
-                        <span className={`${product?.salePrice > 0 ? 'line-through' : ''} text-base text-primary font-semibold`}>
+                    <div className="flex items-center gap-2">
+                        <span className={`${product?.salePrice > 0 ? 'line-through text-sm' : ''} text-base text-black font-semibold`}>
                             ₹ {product?.price}
                         </span>
                         {product?.salePrice > 0 && (
-                            <span className="text-lg ml-2 font-semibold text-red-500">
-                                {product?.salePrice}
+                            <span className="text-lg font-semibold text-red-600">
+                                ₹ {product?.salePrice}
                             </span>
                         )}
                     </div>
