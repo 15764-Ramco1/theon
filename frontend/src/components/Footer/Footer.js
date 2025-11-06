@@ -246,23 +246,23 @@ const Footer = () => {
 
                     {/* Features */}
                     <div className="flex w-full flex-col justify-start items-start">
-						<h1 className="text-lg font-bold text-gray-800 mb-4">KEEP IN TOUCH</h1>
+						<h1 className="text-lg font-bold text-white mb-4">KEEP IN TOUCH</h1>
 						{/* Social Media Icons */}
-						<div className="flex space-x-6 text-3xl text-gray-800 mb-6">
-							<AiFillFacebook className="transition-transform transform hover:scale-110 hover:text-blue-600" />
-							<ImTwitter className="transition-transform transform hover:scale-110 hover:text-blue-400" />
-							<AiFillYoutube className="transition-transform transform hover:scale-110 hover:text-red-600" />
-							<ImInstagram className="transition-transform transform hover:scale-110 hover:text-pink-600" />
+						<div className="flex space-x-6 text-3xl text-white mb-6">
+							<AiFillFacebook className="transition-transform transform hover:scale-110 hover:text-blue-400 cursor-pointer" />
+							<ImTwitter className="transition-transform transform hover:scale-110 hover:text-blue-300 cursor-pointer" />
+							<AiFillYoutube className="transition-transform transform hover:scale-110 hover:text-red-400 cursor-pointer" />
+							<ImInstagram className="transition-transform transform hover:scale-110 hover:text-pink-400 cursor-pointer" />
 						</div>
 
 						{/* Email Input and Agreement Section */}
-						<div className="flex w-full max-w-md border border-gray-300 rounded-full space-x-3 p-3 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
+						<div className="flex w-full max-w-md border border-gray-600 rounded-full space-x-3 p-3 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out bg-white">
 							<input
 								type="email"
 								placeholder="Get Cool Coupons..."
-								className="rounded-full w-full text-sm text-black placeholder:text-gray-400 outline-none transition-all duration-300 ease-in-out"
+								className="rounded-full w-full text-sm text-black placeholder:text-gray-500 outline-none transition-all duration-300 ease-in-out bg-transparent"
 							/>
-							<button className="bg-black p-3 hover:bg-gray-700 transition-all duration-300 ease-in-out text-white rounded-full transform hover:rotate-45 focus:outline-none">
+							<button className="bg-black p-3 hover:bg-gray-800 transition-all duration-300 ease-in-out text-white rounded-full transform hover:scale-105 focus:outline-none">
 								<ArrowUp />
 							</button>
 						</div>
