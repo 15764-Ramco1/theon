@@ -36,7 +36,7 @@ const MenuItems = ({setOpenCartSheet,openCardSheet})=>{
                 <Label key={item?.id} onClick={()=> {
                     setOpenCartSheet(false);
                     handleNavigate(item)
-                }} className='text-sm font-medium cursor-pointer'>
+                }} className='text-sm font-medium cursor-pointer nav-link text-black hover:text-gray-700'>
                     {item?.label}
                 </Label>
             ))
