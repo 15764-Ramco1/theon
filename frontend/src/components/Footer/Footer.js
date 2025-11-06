@@ -176,26 +176,26 @@ const Footer = () => {
 					</div>
 
                     {/* Customer Services */}
-                    <div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-200 pr-4">
-                        <h1 className="text-lg font-bold text-gray-800 mb-4">USEFULL LINKS</h1>
+                    <div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-700 pr-4">
+                        <h1 className="text-lg font-bold text-white mb-4">USEFULL LINKS</h1>
                         <ul className="text-sm space-y-4">
                             <Link to={`/dashboard?activetab=Orders-Returns`}>
-                                <li className="hover:underline text-gray-600">Orders & Returns</li>
+                                <li className="hover:underline text-gray-400">Orders & Returns</li>
                             </Link>
                             <Link to="/about">
-                                <li className="hover:underline text-gray-600">About Us</li>
+                                <li className="hover:underline text-gray-400">About Us</li>
                             </Link>
                             <Link to="/faq">
-                                <li className="hover:underline text-gray-600">FAQ</li>
+                                <li className="hover:underline text-gray-400">FAQ</li>
                             </Link>
                             <Link to="/contact">
-                                <li className="hover:underline text-gray-600">Contact Us</li>
+                                <li className="hover:underline text-gray-400">Contact Us</li>
                             </Link>
                             <Link to="/tc" target="_blank">
-                                <li className="hover:underline text-gray-600">Terms And Conditions</li>
+                                <li className="hover:underline text-gray-400">Terms And Conditions</li>
                             </Link>
                             <Link to="/privacyPolicy" target="_blank">
-                                <li className="hover:underline text-gray-600">Privacy Policy</li>
+                                <li className="hover:underline text-gray-400">Privacy Policy</li>
                             </Link>
                         </ul>
                     </div>
