@@ -82,7 +82,7 @@ const HeaderRightContent = ({user,openCardSheet,setOpenCartSheet})=>{
         </Sheet>
         <DropdownMenu>
             <DropdownMenuTrigger asChild >
-                <Avatar className = "bg-black">
+                <Avatar className = "bg-black hover:shadow-lg hover:shadow-black/30 transition-all duration-300 cursor-pointer">
                     <AvatarFallback className = "bg-black text-white font-extrabold">
                         {getInitials(user?.userName) || 'User Data'}
                     </AvatarFallback>
