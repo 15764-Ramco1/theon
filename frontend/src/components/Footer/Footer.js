@@ -62,7 +62,7 @@ const Footer = () => {
 	}, [memoizedProductsOptions]);
 	// console.log("memoizedProductsOptions: ",memoizedProductsOptions);
     return (
-        <div className="w-screen min-h-fit border-t-[1px] border-t-gray-300 bg-white font-kumbsan">
+        <div className="w-screen min-h-fit bg-black font-kumbsan" style={{ backgroundColor: '#000000' }}>
             <div className="w-full max-w-screen-2xl justify-self-center p-10 2xl:p-14 md:p-14 xl:p-14 py-10 max-h-fit">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 text-black border-b border-gray-200 pb-10">
 					<div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
