@@ -88,15 +88,15 @@ const Footer = () => {
 								</ul>
 							</ul>
 					</div>
-					<div className="md:border-r block sm:hidden lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
+					<div className="md:border-r block sm:hidden lg:border-r xl:border-r 2xl:border-r border-gray-700 space-y-3">
 						<div
 							onClick={() => toggleDropdown("shop")}
-							className="w-full justify-start border-t border-b py-3 border-gray-200 flex flex-col items-center"
+							className="w-full justify-start border-t border-b py-3 border-gray-700 flex flex-col items-center"
 						>
 							<div className="w-full justify-between flex flex-row items-center">
-								<h1 className="text-lg font-bold text-gray-800">SHOP</h1>
+								<h1 className="text-lg font-bold text-white">SHOP</h1>
 								<ChevronUp
-									className={`${openDropdown["shop"] ? "rotate-180" : ""} transition-transform duration-300 ease-in-out`}
+									className={`${openDropdown["shop"] ? "rotate-180" : ""} transition-transform duration-300 ease-in-out text-white`}
 								/>
 							</div>
 
@@ -114,7 +114,7 @@ const Footer = () => {
 											e.stopPropagation();
 											handelSetQuery(gender?.Gender,'')
 										}} key={index}>
-											<h3 className="hover:underline cursor-pointer text-gray-600 font-bold">
+											<h3 className="hover:underline cursor-pointer text-gray-300 font-bold">
 												{gender?.Gender}
 											</h3>
 											{gender?.category &&
@@ -125,7 +125,7 @@ const Footer = () => {
 													onClick={() =>
 														handelSetQuery(gender?.Gender, category?.title)
 													}
-													className="hover:underline cursor-pointer text-gray-600"
+													className="hover:underline cursor-pointer text-gray-400"
 												>
 													{category?.title}
 												</li>
