@@ -108,13 +108,25 @@ const HeaderRightContent = ({user,openCardSheet,setOpenCartSheet})=>{
 }
 const ShoppingViewHeader = () => {
     const [openCardSheet,setOpenCartSheet] = useState(false);
+    const [scrolled,setScrolled] = useState(false);
     const {isAuthenticated,user} = useSelector(state => state.auth)
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const isScrolled = window.scrollY > 10;
+            setScrolled(isScrolled);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <header className='sticky top-0 z-40 w-ful border-b bg-background'> 
+        <header className={`sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}>
             <div className='flex h-16 items-center justify-between px-4 md:px-16'>
-                <Link className='flex items-center gap-2' to={"/shop/home"}>
-                    <House className='h-6 w-6'/>
-                    <span className='font-bold'>ECommerce</span>
+                <Link className='flex items-center gap-2 hover:opacity-80 transition-opacity' to={"/shop/home"}>
+                    <House className='h-6 w-6 text-black'/>
+                    <span className='font-bold text-black text-lg'>ECommerce</span>
                 </Link>
                 <Sheet>
                     <SheetTrigger asChild>
