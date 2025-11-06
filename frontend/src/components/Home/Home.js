@@ -165,7 +165,10 @@ const Home = ({user}) => {
     
 	
     return (
-        <div ref={scrollableDivRef} className="w-screen font-kumbsan h-screen overflow-y-auto justify-start scrollbar bg-slate-200 overflow-x-hidden scrollbar-track-gray-800 scrollbar-thumb-gray-300">
+        <div ref={scrollableDivRef} className="w-screen font-kumbsan h-screen overflow-y-auto justify-start scrollbar bg-white overflow-x-hidden scrollbar-track-gray-800 scrollbar-thumb-gray-300">
+            {/* Hero Banner Section */}
+            <HeroBanner />
+
             {
                 window.screen.width > 1024 ?
                     <Fragment >
