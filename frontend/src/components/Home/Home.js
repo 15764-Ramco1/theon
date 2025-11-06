@@ -18,6 +18,7 @@ import BackToTopButton from './BackToTopButton';
 import WhatsAppButton from './WhatsAppButton';
 import { useServerBanners } from '../../Contaxt/ServerBannerContext';
 import TrackVisite from '../TrackVisite';
+import HeroBanner from './HeroBanner';
 
 
 const Home = ({user}) => {
