@@ -1,3 +1,7 @@
+/* Import Design System */
+@import './styles/design-system.css';
+
+/* Original App Styles */
 .App {
   text-align: center;
 }
@@ -14,7 +18,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #000000;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -25,7 +29,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: #000000;
 }
 
 @keyframes App-logo-spin {
@@ -35,4 +39,56 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Global Application Styles */
+body {
+  background-color: #ffffff;
+  color: #000000;
+  font-family: 'kumbsan', sans-serif;
+}
+
+/* Update existing background classes to use design system */
+.bg-slate-200 {
+  background-color: #ffffff !important;
+}
+
+.bg-gray-100 {
+  background-color: #f9f9f9 !important;
+}
+
+/* Update text colors */
+.text-gray-700 {
+  color: #000000 !important;
+}
+
+.text-gray-600 {
+  color: #666666 !important;
+}
+
+.text-gray-800 {
+  color: #000000 !important;
+}
+
+.text-slate-800 {
+  color: #000000 !important;
+}
+
+/* Update border colors */
+.border-gray-200,
+.border-gray-300,
+.border-gray-700 {
+  border-color: #e0e0e0 !important;
+}
+
+/* Enhanced animation classes */
+.hover\:animate-vibrateScale:hover {
+  animation: vibrateScale 0.3s ease-in-out;
+}
+
+@keyframes vibrateScale {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.05) rotate(1deg); }
+  50% { transform: scale(1.05) rotate(-1deg); }
+  75% { transform: scale(1.05) rotate(1deg); }
 }

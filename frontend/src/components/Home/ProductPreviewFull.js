@@ -202,7 +202,7 @@ const ProductPreviewFull = ({ product ,user}) => {
 	}, [currentSize, currentColor]); */
 
     return (
-        <div className='max-w-screen-2xl font-kumbsan w-full flex flex-col justify-self-center justify-center items-center bg-slate-200'>
+        <div className='max-w-screen-2xl font-kumbsan w-full flex flex-col justify-self-center justify-center items-center bg-white py-8'>
             {/* Preview Headers Section */}
             <div className="min-w-fit flex justify-center items-center gap-3 sm:gap-4 md:gap-5 mb-6 font1 px-6 mt-5 my-2 max-w-full">
                 {previewHeader && previewHeader.length > 0 &&
@@ -216,7 +216,7 @@ const ProductPreviewFull = ({ product ,user}) => {
                                 }
                             }}
                             key={index}
-                            className={`border-2 border-gray-600 border-opacity-70 p-2 sm:p-3 md:p-4 lg:p-4 xl:p-5 px-5 py-2 sm:px-6 sm:py-3 flex items-center justify-center md:w-[130px] lg:w-[150px] xl:w-[180px] 2xl:w-[200px] sm:w-[120px] sm:h-[35px] h-[40px] transform font-kumbsan transition-transform duration-300 ease-out hover:scale-110 cursor-pointer rounded-full ${activePreview === h.id ? 'bg-black text-white' : 'bg-neutral-50'}`}
+                            className={`border-2 border-black p-2 sm:p-3 md:p-4 lg:p-4 xl:p-5 px-5 py-2 sm:px-6 sm:py-3 flex items-center justify-center md:w-[130px] lg:w-[150px] xl:w-[180px] 2xl:w-[200px] sm:w-[120px] sm:h-[35px] h-[40px] transform font-kumbsan transition-all duration-300 ease-out hover:scale-110 cursor-pointer rounded-full ${activePreview === h.id ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'}`}
                         >
                             <span className="inline-block font-medium text-center text-[10px] sm:text-[12px] md:text-[14px] lg:text-[16px] xl:text-[18px] whitespace-nowrap overflow-hidden text-ellipsis">
                                 {h?.title}
@@ -226,35 +226,35 @@ const ProductPreviewFull = ({ product ,user}) => {
                 }
             </div>
             {/* Product Previews Section */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 xl:grid-cols-5 lg:grid-cols-5 2xl:grid-cols-5 justify-center md:px-12 lg:px-12 2xl:px-12 xl:px-12 px-2 gap-2 md:gap-3 items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 justify-center md:px-12 lg:px-12 2xl:px-12 xl:px-12 px-2 gap-4 items-center">
                 {previewProducts && previewProducts.length > 0 &&
                     previewProducts.map((p, index) => {
                         // const p = previewProducts[0];
                         const selectedColor = selectedColors[p._id] || p.AllColors[0]?.images;
                         return (
-                            <div key={`product_${p._id}_${index}`} className={`w-full h-full rounded-md bg-gray-200 relative flex flex-col justify-start items-center hover:shadow-md transition-all duration-300 ease-in-out ${window.screen.width > 1024 ? "hover:scale-105":""}`}>
+                            <div key={`product_${p._id}_${index}`} className={`w-full h-full rounded-lg bg-white border border-[#e0e0e0] relative flex flex-col justify-start items-center hover-lift cursor-pointer overflow-hidden ${window.screen.width > 1024 ? "":"hover:scale-105"}`}>
                                 <HomeProductsPreview product={p} selectedColorImages={selectedColor} user={user}/>
-                                <div className="w-full h-fit p-2 px-3 bg-white flex flex-col justify-center items-start hover:shadow-md space-y-2">
-                                    <h2 className="font1 text-[12px] md:text-base md:font-semibold sm:font-semibold font-normal 2xl:font-semibold xl:font-semibold font-kumbsan text-gray-800 text-left truncate">
+                                <div className="w-full h-fit p-3 px-4 bg-white flex flex-col justify-center items-start space-y-2">
+                                    <h2 className="font1 text-[12px] md:text-base md:font-semibold sm:font-semibold font-normal 2xl:font-semibold xl:font-semibold font-kumbsan text-black text-left truncate">
                                         {p?.title}
                                     </h2>
                                     
                                     <div className="w-full justify-start gap-y-1 items-center flex flex-row space-x-2">
                                         {/* Sale Price */}
-										{p.salePrice > 0 && <div className="text-xs md:text-sm font-light md:font-medium font-kumbsan text-slate-700">
-											<span className="text-sm md:text-base font-bold text-gray-900">
+										{p.salePrice > 0 && <div className="text-xs md:text-sm font-light md:font-medium font-kumbsan">
+											<span className="text-sm md:text-base font-bold text-black">
 												₹{formattedSalePrice(p.salePrice)}
 											</span>
                                         </div>}
-                                        
+
                                         {/* Regular Price */}
-                                        <div className="text-xs md:text-lg font-light md:font-medium font-kumbsan text-slate-700 hover:animate-bounce">
+                                        <div className="text-xs md:text-lg font-light md:font-medium font-kumbsan">
                                             {p.salePrice && p.salePrice > 0 ? (
-                                                <span className="line-through text-gray-500">
+                                                <span className="line-through" style={{ color: '#666666' }}>
                                                     ₹{formattedSalePrice(p.price)}
                                                 </span>
                                             ) : (
-                                                <span className="text-xs md:text-lg font-normal md:font-bold font-kumbsan">
+                                                <span className="text-xs md:text-lg font-normal md:font-bold font-kumbsan text-black">
                                                     ₹{formattedSalePrice(p.price)}
                                                 </span>
                                             )}
@@ -301,9 +301,9 @@ const ProductPreviewFull = ({ product ,user}) => {
                     })
                 }
             </div>
-            <div className='w-full text-center flex flex-row justify-center items-center mt-2 relative transform transition-all py-4'>
-                <div onClick={handleMoveToQuery} className='px-10 flex text-sm md:text-lg hover:bg-black focus:bg-black hover:text-white focus:text-white text-gray-800 rounded-lg p-4 cursor-pointer border border-gray-800 hover:border-white focus:border-white hover:border-2 hover:border-opacity-100 border-opacity-50 hover:scale-110 duration-300 hover:animate-shine'>
-                    <span className='hover:animate-vibrateScale text-[15px] sm:text-[15px] md:text-[16px]'>View More</span>
+            <div className='w-full text-center flex flex-row justify-center items-center mt-6 relative transform transition-all py-4'>
+                <div onClick={handleMoveToQuery} className='px-8 py-3 flex text-sm md:text-lg bg-black text-white rounded-lg cursor-pointer hover-scale hover:bg-gray-800 transition-all duration-300'>
+                    <span className='text-[15px] sm:text-[15px] md:text-[16px]'>View More</span>
                 </div>
             </div>
         </div>

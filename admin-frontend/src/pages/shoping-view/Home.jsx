@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import ProductDetailsDialogue from '@/components/shopping-view/ProductDetails';
 import { getFeatureImage } from '@/store/common-slice';
 import Carousel from './Carousel';
+import HeroBanner from '@/components/shopping-view/HeroBanner';
+import FeatureIcons from '@/components/shopping-view/FeatureIcons';
 const ShoppingHome = () => {
     const {user} = useSelector(state => state.auth);
     const{featuresList} = useSelector(state => state.common);
@@ -88,22 +90,30 @@ const ShoppingHome = () => {
 	},[dispatch])
     console.log('feature Images Array: ',featuresList);
     return (
-        <div className='flex flex-col w-full min-h-screen mt-10'>
+        <div className='flex flex-col w-full min-h-screen'>
+            {/* Hero Banner */}
+            <HeroBanner />
+
+            {/* Carousel Section */}
             {
                 featuresList && featuresList.length > 0 && <Carousel setCurrentSlide={setCurrentSlide} currentSlide={currentSlide} featuresList={featuresList}/>
             }
-            
-            <div className='columns-1 sm:columns-2 lg:columns-3 py-10 md:py-20 gap-4'>
+
+            {/* Feature Icons Section */}
+            <FeatureIcons />
+
+            {/* Category Images Grid */}
+            <div className='columns-1 sm:columns-2 lg:columns-3 py-10 md:py-20 gap-4 px-4'>
                 {
                     featuresList && featuresList.length && featuresList.map((item, index) => (
-                        <div key={index} onClick={() => handleNavigateToListingPage(item, 'category')} className='mb-4 cursor-pointer break-inside-avoid relative'>
+                        <div key={index} onClick={() => handleNavigateToListingPage(item, 'category')} className='mb-4 cursor-pointer break-inside-avoid relative hover-lift'>
                             <img
                                 src={item.image}
                                 alt='features Images'
                                 className='w-full object-cover rounded-lg'
                             />
                             <span className='absolute bottom-1/3 min-w-1.5 left-1/2 bg-black text-white px-3 py-1 rounded'>{item?.category}</span>
-                            
+
                         </div>
                     ))
                 }
@@ -126,22 +136,30 @@ const ShoppingHome = () => {
                     ))
                 }
             </div>
-            <section className='py-12'>
+            <section className='py-12 bg-[#f9f9f9]' style={{ backgroundColor: '#f9f9f9' }}>
                 <div className='container mx-auto px-4'>
-                    <h2 className='text-3xl font-bold text-center mb-8'>Featured Product</h2>
-                </div>
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center place-items-center'>
-                    {
-                        products && products.length > 0 && products.slice(0, 10).map((product, index) => (
-                            <ShoppingViewProductTile 
-                                key={index}
-                                product={product} 
-                                handleGetProductDetails={handleGetProductDetails} 
-                                handleAddToCart={handleAddToCart} 
-                                isLoading={isAddToCartUpdateLoading} 
-                            />
-                        ))
-                    }
+                    <h2 className='text-4xl font-bold text-center mb-12 text-black'>Featured Products</h2>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center'>
+                        {
+                            products && products.length > 0 && products.slice(0, 8).map((product, index) => (
+                                <div
+                                    key={index}
+                                    className='animate-fade-in-up opacity-0'
+                                    style={{
+                                        animationDelay: `${index * 100 + 400}ms`,
+                                        animationFillMode: 'forwards'
+                                    }}
+                                >
+                                    <ShoppingViewProductTile
+                                        product={product}
+                                        handleGetProductDetails={handleGetProductDetails}
+                                        handleAddToCart={handleAddToCart}
+                                        isLoading={isAddToCartUpdateLoading}
+                                    />
+                                </div>
+                            ))
+                        }
+                    </div>
                 </div>
             </section>
             <ProductDetailsDialogue 

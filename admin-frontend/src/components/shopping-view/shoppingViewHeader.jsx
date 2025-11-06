@@ -36,7 +36,7 @@ const MenuItems = ({setOpenCartSheet,openCardSheet})=>{
                 <Label key={item?.id} onClick={()=> {
                     setOpenCartSheet(false);
                     handleNavigate(item)
-                }} className='text-sm font-medium cursor-pointer'>
+                }} className='text-sm font-medium cursor-pointer nav-link text-black hover:text-gray-700'>
                     {item?.label}
                 </Label>
             ))
@@ -67,11 +67,11 @@ const HeaderRightContent = ({user,openCardSheet,setOpenCartSheet})=>{
         <Sheet open = {openCardSheet} onOpenChange={()=>{
             setOpenCartSheet(false);
         }}>
-            <Button onClick = {()=> setOpenCartSheet(true)} variant = "outline" size = "icon" className = "relative flex-row" >
+            <Button onClick = {()=> setOpenCartSheet(true)} variant = "outline" size = "icon" className = "relative flex-row hover-scale border-black text-black hover:bg-black hover:text-white" >
                 <ShoppingCart className='h-10 w-10'/>
                 {
                     cartItems?.items?.length > 0 && (
-                        <Badge  className='absolute w-1 h-4 top-[-5px] right-[-2px] items-center justify-center'>
+                        <Badge  className='absolute w-1 h-4 top-[-5px] right-[-2px] items-center justify-center bg-black text-white'>
                             <span className='text-[15px]'>{cartItems?.items?.length}</span>
                         </Badge>
                     )
@@ -82,7 +82,7 @@ const HeaderRightContent = ({user,openCardSheet,setOpenCartSheet})=>{
         </Sheet>
         <DropdownMenu>
             <DropdownMenuTrigger asChild >
-                <Avatar className = "bg-black">
+                <Avatar className = "bg-black hover:shadow-lg hover:shadow-black/30 transition-all duration-300 cursor-pointer">
                     <AvatarFallback className = "bg-black text-white font-extrabold">
                         {getInitials(user?.userName) || 'User Data'}
                     </AvatarFallback>
@@ -108,13 +108,25 @@ const HeaderRightContent = ({user,openCardSheet,setOpenCartSheet})=>{
 }
 const ShoppingViewHeader = () => {
     const [openCardSheet,setOpenCartSheet] = useState(false);
+    const [scrolled,setScrolled] = useState(false);
     const {isAuthenticated,user} = useSelector(state => state.auth)
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const isScrolled = window.scrollY > 10;
+            setScrolled(isScrolled);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <header className='sticky top-0 z-40 w-ful border-b bg-background'> 
+        <header className={`sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}>
             <div className='flex h-16 items-center justify-between px-4 md:px-16'>
-                <Link className='flex items-center gap-2' to={"/shop/home"}>
-                    <House className='h-6 w-6'/>
-                    <span className='font-bold'>ECommerce</span>
+                <Link className='flex items-center gap-2 hover:opacity-80 transition-opacity' to={"/shop/home"}>
+                    <House className='h-6 w-6 text-black'/>
+                    <span className='font-bold text-black text-lg'>ECommerce</span>
                 </Link>
                 <Sheet>
                     <SheetTrigger asChild>

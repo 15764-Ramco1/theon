@@ -76,41 +76,41 @@ const Navbar = () => {
 	}, [dispatch]);
     return (
         <Fragment>
-            <div className="container font-kumbsan sticky top-0 2xl:w-[100%] xl:w-[100%] lg:w-[100%] mx-auto w-screen max-w-[100%] h-[80px] bg-neutral-100 contenthide z-40">
+            <div className="container font-kumbsan sticky top-0 2xl:w-[100%] xl:w-[100%] lg:w-[100%] mx-auto w-screen max-w-[100%] h-[80px] bg-white border-b border-gray-200 contenthide z-40 hover:shadow-md transition-shadow duration-300">
                 <div className='flex-row flex justify-between items-center w-screen h-full'>
-                    <ul className=' h-full flex  font-semibold text-base md:text-[14px] text-[#282c3f] tracking-[.3px] uppercase'>
-                        <Link className='w-max px-3 flex items-stretch hover:animate-vibrateScale' to="/">
+                    <ul className=' h-full flex  font-semibold text-base md:text-[14px] text-black tracking-[.3px] uppercase'>
+                        <Link className='w-max px-3 flex items-stretch hover-scale' to="/">
                             <li className='w-max flex items-stretch'>
-                                
+
                                 <div className='w-auto justify-between items-center h-auto flex-row flex rounded-t'>
-                                    <Link to='/'> <h1 className='text-[35px] py-1 ml-2 font-extrabold font-kumbsan text-center text-gray-800'>On U</h1></Link>
+                                    <Link to='/'> <h1 className='text-[35px] py-1 ml-2 font-extrabold font-kumbsan text-center text-black hover:opacity-80 transition-opacity duration-300'>On U</h1></Link>
                                 </div>
-                                
+
                             </li>
                         </Link>
                     </ul>
                     <div className='h-full font-bold mt-3 w-fit flex flex-row px-5 items-center justify-end'>
-                        <Link onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover:animate-vibrateScale mb-5' to="/">
+                        <Link onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover-scale mb-5 nav-link' to="/">
 							<li className='w-max flex justify-center items-center border-4 border-transparent cursor-pointer'
 							>
-								<h1 className='px-3 text-center  text-slate-800'>HOME</h1>
+								<h1 className='px-3 text-center text-black'>HOME</h1>
 							</li>
                         </Link>
-                        <Link to={"/products"} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover:animate-vibrateScale mb-5'>
+                        <Link to={"/products"} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover-scale mb-5 nav-link'>
                             <li className='w-max flex justify-center items-center border-4 border-transparent cursor-pointer'
                                 onMouseEnter={() => (setMenu2('block'), setShow2(true))} onMouseLeave={() => (setMenu2('hidden'), setShow2(false))}
                             >
-                                <h1 className='px-3 text-center  text-slate-800'>PRODUCTS</h1>
+                                <h1 className='px-3 text-center text-black'>PRODUCTS</h1>
                             </li>
                         </Link>
-                        <Link to={'/about'} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover:animate-vibrateScale mb-5'>
+                        <Link to={'/about'} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover-scale mb-5 nav-link'>
                             <li className='w-max flex justify-center items-center border-4 border-transparent cursor-pointer'>
-                                <h1 className='px-3 text-center  text-slate-800'>ABOUT</h1>
+                                <h1 className='px-3 text-center text-black'>ABOUT</h1>
                             </li>
                         </Link>
-                        <Link to={'/contact'} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover:animate-vibrateScale mb-5'>
+                        <Link to={'/contact'} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover-scale mb-5 nav-link'>
                             <li className='w-max flex justify-center items-center border-4 border-transparent cursor-pointer'>
-                                <h1 className='px-3 text-center  text-slate-800'>CONTACT</h1>
+                                <h1 className='px-3 text-center text-black'>CONTACT</h1>
                             </li>
                         </Link>
                         <div className="flex flex-row w-full h-14 space-x-5 mb-5 mx-4">
@@ -118,50 +118,50 @@ const Navbar = () => {
 								setIsSearchVisible(false);
 							}} />
 						}
-                            <button onClick={toggleSearchBar} className={`text-black border-opacity-90 transition-all duration-300 ease-ease-out-expo ${isSearchVisible ? "z-30 bg-white border-gray-700 border hover:scale-105":"hover:border hover:animate-vibrateScale"} rounded-lg flex flex-col w-12 justify-center items-center`}>
+                            <button onClick={toggleSearchBar} className={`text-black border-opacity-90 transition-all duration-300 ease-ease-out-expo ${isSearchVisible ? "z-30 bg-white border-black border hover:scale-105":"hover:border hover-scale"} rounded-lg flex flex-col w-12 justify-center items-center border-black`}>
                                 <IoSearch strokeWidth={.5} size={25}/>
                             </button>
                         </div>
-                        <ul className='flex float-right h-full w-full text-[#282c3f] tracking-[.3px] sent'>
+                        <ul className='flex float-right h-full w-full text-black tracking-[.3px] sent'>
                             <li className='w-max flex justify-center items-center  font-semibold capitalize no-underline text-sm border-4 border-transparent cursor-pointer'
                                 onClick={() => (setMenu7(Menu7 === 'block' ? "hidden" : "block"), setShow7(!show7))}
                                 onMouseEnter={() => (setMenu7('block'), setShow7(true))} onMouseLeave={() => (setMenu7('hidden'), setShow7(false))}
                             >
-                                <div onClick={()=> setIsSearchVisible(false)} className="flex flex-row w-full h-6 mb-5 mx-4 hover:animate-vibrateScale">
+                                <div onClick={()=> setIsSearchVisible(false)} className="flex flex-row w-full h-6 mb-5 mx-4 hover-scale hover-glow rounded-full">
                                     <Link to={`${user ? "/dashboard":"/Login"}`}>
-                                        <FaUser className='w-full h-full justify-self-center text-slate-800'/>
+                                        <FaUser className='w-full h-full justify-self-center text-black'/>
                                     </Link>
                                 </div>
                             </li>
                             <li onClick={()=> setIsSearchVisible(false)} className="w-max flex justify-center items-center  font-semibold capitalize no-underline text-sm border-4 border-transparent relative">
                                 {currentWishListCount > 0 && (
-                                    <div className="absolute top-0 right-2 bg-gray-900 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">
+                                    <div className="absolute top-0 right-2 bg-black text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">
                                         <span>{currentWishListCount}</span>
                                     </div>
 								)}
-                                <div onClick={()=> setIsSearchVisible(false)} className="flex flex-row w-full h-6 mb-5 mx-4 hover:animate-vibrateScale">
+                                <div onClick={()=> setIsSearchVisible(false)} className="flex flex-row w-full h-6 mb-5 mx-4 hover-scale">
                                     <Link to="/my_wishlist">
-                                        <FaHeart className='w-full h-full justify-self-center text-slate-800'/>
+                                        <FaHeart className='w-full h-full justify-self-center text-black'/>
                                     </Link>
                                 </div>
                             </li>
                             <li className="w-max flex justify-center items-center pb-1.5 font-semibold font-kumbsan capitalize no-underline text-sm border-4 border-transparent relative">
                                 {
 									currentBagCount > 0 && (
-									<div className="absolute top-0 right-2 bg-gray-900 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">
+									<div className="absolute top-0 right-2 bg-black text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold">
 										<span>{currentBagCount}</span>
 									</div>
 								)}
-                                <div className="flex flex-row w-7 h-7 mb-5 mx-4 hover:animate-vibrateScale">
+                                <div className="flex flex-row w-7 h-7 mb-5 mx-4 hover-scale">
                                     <div onClick={()=> {
 										setIsSearchVisible(false);
 										setBagShow(true)
 									}}>
-										
+
 										<img
 											src={bagCartIcon}
 											alt='bag-icon'
-											className='w-full h-full justify-self-center text-slate-800'
+											className='w-full h-full justify-self-center text-black'
 										/>
                                     </div>
                                 </div>

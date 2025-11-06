@@ -62,11 +62,11 @@ const Footer = () => {
 	}, [memoizedProductsOptions]);
 	// console.log("memoizedProductsOptions: ",memoizedProductsOptions);
     return (
-        <div className="w-screen min-h-fit border-t-[1px] border-t-gray-300 bg-white font-kumbsan">
+        <div className="w-screen min-h-fit bg-black font-kumbsan" style={{ backgroundColor: '#000000' }}>
             <div className="w-full max-w-screen-2xl justify-self-center p-10 2xl:p-14 md:p-14 xl:p-14 py-10 max-h-fit">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 text-black border-b border-gray-200 pb-10">
-					<div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
-							<h1 className="text-lg font-bold mb-4 text-gray-800">SHOP</h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 text-white border-b border-gray-700 pb-10">
+					<div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-700 space-y-3">
+							<h1 className="text-lg font-bold mb-4 text-white">SHOP</h1>
 							<ul className="text-sm space-y-4 mt-3">
 								<ul className="text-sm space-y-2 mt-3 justify-start items-start flex flex-col w-full">
 									{
@@ -77,9 +77,9 @@ const Footer = () => {
 													e.stopPropagation();
 													handelSetQuery(gender?.Gender,'')
 												}} key={index}>
-													<h3 key={index} className="hover:underline cursor-pointer text-gray-600 font-bold">{gender?.Gender}</h3>
+													<h3 key={index} className="hover:underline cursor-pointer text-gray-300 font-bold">{gender?.Gender}</h3>
 													{
-														gender?.category && gender?.category.length > 0 && gender?.category.map((category,subCatIndex)=><li key={subCatIndex} onClick={()=> handelSetQuery(gender?.Gender,category?.title)} className="hover:underline cursor-pointer text-gray-600">{category?.title}</li>)
+														gender?.category && gender?.category.length > 0 && gender?.category.map((category,subCatIndex)=><li key={subCatIndex} onClick={()=> handelSetQuery(gender?.Gender,category?.title)} className="hover:underline cursor-pointer text-gray-400">{category?.title}</li>)
 													}
 												</div>
 											)
@@ -88,15 +88,15 @@ const Footer = () => {
 								</ul>
 							</ul>
 					</div>
-					<div className="md:border-r block sm:hidden lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
+					<div className="md:border-r block sm:hidden lg:border-r xl:border-r 2xl:border-r border-gray-700 space-y-3">
 						<div
 							onClick={() => toggleDropdown("shop")}
-							className="w-full justify-start border-t border-b py-3 border-gray-200 flex flex-col items-center"
+							className="w-full justify-start border-t border-b py-3 border-gray-700 flex flex-col items-center"
 						>
 							<div className="w-full justify-between flex flex-row items-center">
-								<h1 className="text-lg font-bold text-gray-800">SHOP</h1>
+								<h1 className="text-lg font-bold text-white">SHOP</h1>
 								<ChevronUp
-									className={`${openDropdown["shop"] ? "rotate-180" : ""} transition-transform duration-300 ease-in-out`}
+									className={`${openDropdown["shop"] ? "rotate-180" : ""} transition-transform duration-300 ease-in-out text-white`}
 								/>
 							</div>
 
@@ -114,7 +114,7 @@ const Footer = () => {
 											e.stopPropagation();
 											handelSetQuery(gender?.Gender,'')
 										}} key={index}>
-											<h3 className="hover:underline cursor-pointer text-gray-600 font-bold">
+											<h3 className="hover:underline cursor-pointer text-gray-300 font-bold">
 												{gender?.Gender}
 											</h3>
 											{gender?.category &&
@@ -125,7 +125,7 @@ const Footer = () => {
 													onClick={() =>
 														handelSetQuery(gender?.Gender, category?.title)
 													}
-													className="hover:underline cursor-pointer text-gray-600"
+													className="hover:underline cursor-pointer text-gray-400"
 												>
 													{category?.title}
 												</li>
@@ -138,18 +138,18 @@ const Footer = () => {
 						</div>
 						</div>
                     {/* Online Shopping */}
-                    <div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
-                        <h1 className="text-lg font-bold mb-4 text-gray-800">Info</h1>
+                    <div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-700 space-y-3">
+                        <h1 className="text-lg font-bold mb-4 text-white">Info</h1>
                         <ul className="text-sm space-y-2 mt-3">
-							<h3 className="text-sm font-bold text-gray-600">Owner: <span className="font-normal text-xs">On U</span></h3>
-							<div className="flex flex-row justify-start space-x-1 cursor-pointer hover:text-indigo-400 items-center">
-								<Link to={'/contact'}><h2 className="text-xl font-bold">GET DIRECTION</h2></Link>
-								<ArrowUp className="rotate-45" />
+							<h3 className="text-sm font-bold text-gray-300">Owner: <span className="font-normal text-xs text-gray-400">On U</span></h3>
+							<div className="flex flex-row justify-start space-x-1 cursor-pointer hover:text-gray-300 items-center">
+								<Link to={'/contact'}><h2 className="text-xl font-bold text-white">GET DIRECTION</h2></Link>
+								<ArrowUp className="rotate-45 text-white" />
 							</div>
-							<p className="text-sm text-gray-600 font-bold">Company: <span className="font-normal text-xs">On U</span></p>
-							<p className="text-sm text-gray-600 font-bold">Address: <span className="font-normal text-xs">{termsAndCondition?.businessAddress}</span></p>
-							<p className="text-sm text-gray-600 font-bold">Phone: <span className="font-normal text-xs">{termsAndCondition?.phoneNumber}</span></p>
-							<a href={`mailto:${termsAndCondition?.contactInfo}`} className="text-sm hover:underline font-bold text-gray-600">Email: <span className="font-normal text-xs">{termsAndCondition?.contactInfo}</span></a>
+							<p className="text-sm text-gray-300 font-bold">Company: <span className="font-normal text-xs text-gray-400">On U</span></p>
+							<p className="text-sm text-gray-300 font-bold">Address: <span className="font-normal text-xs text-gray-400">{termsAndCondition?.businessAddress}</span></p>
+							<p className="text-sm text-gray-300 font-bold">Phone: <span className="font-normal text-xs text-gray-400">{termsAndCondition?.phoneNumber}</span></p>
+							<a href={`mailto:${termsAndCondition?.contactInfo}`} className="text-sm hover:underline font-bold text-gray-300">Email: <span className="font-normal text-xs text-gray-400">{termsAndCondition?.contactInfo}</span></a>
 						</ul>
                     </div>
 					<div className="md:border-r block sm:hidden lg:border-r xl:border-r 2xl:border-r border-gray-200 space-y-3">
@@ -176,26 +176,26 @@ const Footer = () => {
 					</div>
 
                     {/* Customer Services */}
-                    <div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-200 pr-4">
-                        <h1 className="text-lg font-bold text-gray-800 mb-4">USEFULL LINKS</h1>
+                    <div className="md:border-r hidden sm:block lg:border-r xl:border-r 2xl:border-r border-gray-700 pr-4">
+                        <h1 className="text-lg font-bold text-white mb-4">USEFULL LINKS</h1>
                         <ul className="text-sm space-y-4">
                             <Link to={`/dashboard?activetab=Orders-Returns`}>
-                                <li className="hover:underline text-gray-600">Orders & Returns</li>
+                                <li className="hover:underline text-gray-400">Orders & Returns</li>
                             </Link>
                             <Link to="/about">
-                                <li className="hover:underline text-gray-600">About Us</li>
+                                <li className="hover:underline text-gray-400">About Us</li>
                             </Link>
                             <Link to="/faq">
-                                <li className="hover:underline text-gray-600">FAQ</li>
+                                <li className="hover:underline text-gray-400">FAQ</li>
                             </Link>
                             <Link to="/contact">
-                                <li className="hover:underline text-gray-600">Contact Us</li>
+                                <li className="hover:underline text-gray-400">Contact Us</li>
                             </Link>
                             <Link to="/tc" target="_blank">
-                                <li className="hover:underline text-gray-600">Terms And Conditions</li>
+                                <li className="hover:underline text-gray-400">Terms And Conditions</li>
                             </Link>
                             <Link to="/privacyPolicy" target="_blank">
-                                <li className="hover:underline text-gray-600">Privacy Policy</li>
+                                <li className="hover:underline text-gray-400">Privacy Policy</li>
                             </Link>
                         </ul>
                     </div>
@@ -246,23 +246,23 @@ const Footer = () => {
 
                     {/* Features */}
                     <div className="flex w-full flex-col justify-start items-start">
-						<h1 className="text-lg font-bold text-gray-800 mb-4">KEEP IN TOUCH</h1>
+						<h1 className="text-lg font-bold text-white mb-4">KEEP IN TOUCH</h1>
 						{/* Social Media Icons */}
-						<div className="flex space-x-6 text-3xl text-gray-800 mb-6">
-							<AiFillFacebook className="transition-transform transform hover:scale-110 hover:text-blue-600" />
-							<ImTwitter className="transition-transform transform hover:scale-110 hover:text-blue-400" />
-							<AiFillYoutube className="transition-transform transform hover:scale-110 hover:text-red-600" />
-							<ImInstagram className="transition-transform transform hover:scale-110 hover:text-pink-600" />
+						<div className="flex space-x-6 text-3xl text-white mb-6">
+							<AiFillFacebook className="transition-transform transform hover:scale-110 hover:text-blue-400 cursor-pointer" />
+							<ImTwitter className="transition-transform transform hover:scale-110 hover:text-blue-300 cursor-pointer" />
+							<AiFillYoutube className="transition-transform transform hover:scale-110 hover:text-red-400 cursor-pointer" />
+							<ImInstagram className="transition-transform transform hover:scale-110 hover:text-pink-400 cursor-pointer" />
 						</div>
 
 						{/* Email Input and Agreement Section */}
-						<div className="flex w-full max-w-md border border-gray-300 rounded-full space-x-3 p-3 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out">
+						<div className="flex w-full max-w-md border border-gray-600 rounded-full space-x-3 p-3 shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out bg-white">
 							<input
 								type="email"
 								placeholder="Get Cool Coupons..."
-								className="rounded-full w-full text-sm text-black placeholder:text-gray-400 outline-none transition-all duration-300 ease-in-out"
+								className="rounded-full w-full text-sm text-black placeholder:text-gray-500 outline-none transition-all duration-300 ease-in-out bg-transparent"
 							/>
-							<button className="bg-black p-3 hover:bg-gray-700 transition-all duration-300 ease-in-out text-white rounded-full transform hover:rotate-45 focus:outline-none">
+							<button className="bg-black p-3 hover:bg-gray-800 transition-all duration-300 ease-in-out text-white rounded-full transform hover:scale-105 focus:outline-none">
 								<ArrowUp />
 							</button>
 						</div>
@@ -271,7 +271,7 @@ const Footer = () => {
 
                 </div>
 
-                <div className="mt-6 h-[100px] justify-end items-center flex flex-col text-center text-gray-500 text-md">
+                <div className="mt-6 h-[100px] justify-end items-center flex flex-col text-center text-gray-400 text-md">
                     <span>&copy; 2025 www.theonu.in. All rights reserved.</span>
                 </div>
             </div>

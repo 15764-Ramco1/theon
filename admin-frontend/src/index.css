@@ -7,43 +7,47 @@
 @layer base {
   :root {
 
-    --background: 0 0% 100%;
+    --background: 255 255 255; /* #ffffff */
 
-    --foreground: 224 71.4% 4.1%;
+    --foreground: 0 0 0; /* #000000 */
 
-    --card: 0 0% 100%;
+    --card: 255 255 255; /* #ffffff */
 
-    --card-foreground: 224 71.4% 4.1%;
+    --card-foreground: 0 0 0; /* #000000 */
 
-    --popover: 0 0% 100%;
+    --popover: 255 255 255; /* #ffffff */
 
-    --popover-foreground: 224 71.4% 4.1%;
+    --popover-foreground: 0 0 0; /* #000000 */
 
-    --primary: 220.9 39.3% 11%;
+    --primary: 0 0 0; /* #000000 */
 
-    --primary-foreground: 210 20% 98%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14.3% 95.9%;
+    --secondary: 245 245 245; /* #f5f5f5 */
 
-    --secondary-foreground: 220.9 39.3% 11%;
+    --secondary-foreground: 0 0 0; /* #000000 */
 
-    --muted: 220 14.3% 95.9%;
+    --muted: 102 102 102; /* #666666 */
 
-    --muted-foreground: 220 8.9% 46.1%;
+    --muted-foreground: 102 102 102; /* #666666 */
 
-    --accent: 220 14.3% 95.9%;
+    --accent: 249 249 249; /* #f9f9f9 */
 
-    --accent-foreground: 220.9 39.3% 11%;
+    --accent-foreground: 0 0 0; /* #000000 */
 
     --destructive: 0 84.2% 60.2%;
 
     --destructive-foreground: 210 20% 98%;
 
-    --border: 220 13% 91%;
+    --border: 224 224 224; /* #e0e0e0 */
 
-    --input: 220 13% 91%;
+    --input: 224 224 224; /* #e0e0e0 */
 
-    --ring: 224 71.4% 4.1%;
+    --ring: 0 0 0; /* #000000 */
+
+    --section-grey-1: 245 245 245; /* #f5f5f5 */
+
+    --section-grey-2: 249 249 249; /* #f9f9f9 */
 
     --chart-1: 12 76% 61%;
 
@@ -128,4 +132,108 @@
 
 .animate-loading-bar {
     animation: loadingBar 2s infinite linear;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes underlineExpand {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.6s ease-out forwards;
+}
+
+.animate-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animate-delay-600 {
+  animation-delay: 0.6s;
+}
+
+.animate-delay-800 {
+  animation-delay: 0.8s;
+}
+
+.animate-delay-1000 {
+  animation-delay: 1.0s;
+}
+
+.animate-delay-1200 {
+  animation-delay: 1.2s;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.nav-link {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #000000;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link:hover::after {
+  width: 100%;
 }
