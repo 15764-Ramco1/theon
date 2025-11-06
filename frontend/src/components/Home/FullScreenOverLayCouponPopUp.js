@@ -1,0 +1,184 @@
+import { X } from 'lucide-react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { fetchCouponBannerData, sendGetCoupon } from '../../action/common.action';
+import { useDispatch } from 'react-redux';
+import popUp from '../images/popUp-image.jpg';
+import { useSettingsContext } from '../../Contaxt/SettingsContext';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+
+const FullScreenOverLayCouponPopUp = () => {
+    const dispatch = useDispatch();
+    const {checkAndCreateToast} = useSettingsContext();
+    const [isOpen, setIsOpen] = useState(true);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [loadingSent, setLoadingSent] = useState(false);
+	const[bannerData,setBannerData] = useState(null);
+
+    const handleGetCouponClick = async () => {
+        try {
+            setLoadingSent(true);
+            const sentSuccessful = await dispatch(sendGetCoupon({ fullName: name, email: email }));
+            // Close the dialog if successful or display an error message if failed or invalid email/name
+            if (sentSuccessful?.success) {
+                checkAndCreateToast("success",sentSuccessful?.message || "Email sent successfully");
+                setName('');
+                setEmail('');
+                setIsOpen(false);
+            } else {
+                checkAndCreateToast("error",sentSuccessful?.message || 'Invalid email or name');
+            }
+            
+        } catch (error) {
+            console.error("Error sending coupon: ", error);
+            checkAndCreateToast("error","Failed to send coupon email. Please try again later.");
+        }finally{
+            setLoadingSent(false);
+        }
+    };
+	const fetchBannerData = async()=>{
+		try {
+			const response = await dispatch(fetchCouponBannerData())
+			// console.log("Response: ", response);
+			if(response){
+				setBannerData(response);
+			}
+		} catch (error) {
+			console.error("Error fetching banner data: ", error);
+		}
+	}
+    const handleHateCouponClick = () => {
+        closeDialog();
+    };
+
+    // Function to close the dialog
+    const closeDialog = () => {
+        setIsOpen(false);
+    };
+
+    // Close dialog when clicking outside the modal
+    const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+            closeDialog();
+        }
+    };
+	useEffect(()=>{
+		if(isOpen){
+			fetchBannerData();
+		}
+	},[dispatch,isOpen])
+    // Disable scrolling on body when dialog is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden'; // Disable scroll
+        } else {
+            document.body.style.overflow = 'auto'; // Re-enable scroll
+        }
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [isOpen]);
+	// console.log("Banner Data: ", bannerData);
+    return (
+        <Fragment>
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center transition-colors duration-500 ease-in-out"
+                    onClick={handleOverlayClick} // Close on click outside
+                >
+                    <div
+                        className="bg-white w-11/12 md:w-1/2 h-[500px] md:h-3/4 2xl:w-[700px] 2xl:h-[600px] grid grid-cols-1 md:grid-cols-2 gap-3 relative overflow-hidden my-auto"
+                        onClick={(e) => e.stopPropagation()} // Prevent click from propagating to the overlay
+                    >
+                        <button className='absolute w-10 h-10 text-black md:top-3 top-2 md:left-6 right-2 cursor-pointer' onClick={handleHateCouponClick}>
+                            <X />
+                        </button>
+
+                        {/* Left Column - Form */}
+                        <div className="flex flex-col justify-between p-8 md:p-10 max-h-full">
+                            <div className='w-full grid grid-cols-1 gap-3'>
+                                <h1 className="text-2xl font-extrabold font-serif">{bannerData?.header || "Grab a Coupon"}</h1>
+                                <p className="text-gray-800 flex-wrap text-inherit">
+                                    {bannerData?.subHeader || "Join us to receive 20% off on your first purchase. Sign up today and get the coupon!"}
+                                </p>
+
+                            </div>
+
+                            {/* Input Fields */}
+                            <div className="space-y-3 h-fit">
+                                <div>
+                                    <label className="block text-gray-600 font-medium">
+                                        Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        className="w-full p-2 border-b-2 border-gray-300"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder="Enter your name"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-gray-600 font-medium">
+                                        Email
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="email"
+                                        className="w-full p-2 border-b-2 border-gray-300"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="Enter your Email"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex flex-col justify-center gap-2 h-fit">
+                                <button
+                                    disabled={loadingSent}
+                                    onClick={handleGetCouponClick}
+                                    className="w-full p-2 bg-black text-white hover:bg-gray-800"
+                                >
+                                    {loadingSent ? "SENDING EMAIL" : "GET MY COUPON"}
+                                </button>
+                                <button
+                                    onClick={handleHateCouponClick}
+                                    className="w-full p-2 bg-white text-gray-700 border-2 hover:bg-gray-50 hover:text-gray-900"
+                                >
+                                    NO THANKS
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Right Column - Image */}
+                        <div className="hidden md:block relative">
+                            <LazyLoadImage
+								effect='blur'
+								useIntersectionObserver
+									wrapperProps={{
+									// If you need to, you can tweak the effect transition using the wrapper style.
+									style: {transitionDelay: "1s"},
+								}}
+								placeholder = {<div className="w-full h-full bg-gray-200 animate-pulse"></div>}	
+								loading='lazy'
+                                src={bannerData?.bannerModelUrl || popUp}
+                                alt="coupon-image"
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
+
+                        {/* Overlay border (optional) */}
+                        <div className='absolute inset-0 z-20 bg-transparent border-black border-opacity-50 border-2 m-3 pointer-events-none'>
+                        </div>
+                    </div>
+
+                </div>
+            )}
+        </Fragment>
+    );
+};
+
+export default FullScreenOverLayCouponPopUp;

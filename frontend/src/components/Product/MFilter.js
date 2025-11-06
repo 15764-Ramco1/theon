@@ -1,0 +1,918 @@
+import React, { Fragment, useEffect, useState } from 'react'
+import { AiOutlineFire, AiOutlineStar } from 'react-icons/ai'
+import { useNavigate, Link } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { Allproduct as getproduct } from '../../action/productaction'
+import elementClass from 'element-class'
+import './MFilter.css'
+import { capitalizeFirstLetterOfEachWord, getReverseSortingValueValues, getSortingKeyValuePairs } from '../../config'
+import Slider from '@mui/material/Slider';
+import styled from '@emotion/styled'
+import { BsSortDown, BsSortUp } from 'react-icons/bs'
+import { ArrowDown01, ArrowDown10, ArrowUpDown, BadgePercent, Dot, Filter } from 'lucide-react'
+import { FaPercent, FaSortAlphaDown, FaSortAlphaDownAlt } from 'react-icons/fa'
+
+
+const CustomSlider = styled(Slider)({
+    '& .MuiSlider-thumb': {
+        backgroundColor: '#333333', // Dark gray thumb color
+        border: '2px solid #212121', // Darker gray border for the thumb
+        '&:hover': {
+            backgroundColor: '#555555', // Slightly lighter gray on hover
+        },
+    },
+    '& .MuiSlider-rail': {
+        backgroundColor: '#E0E0E0', // Light gray rail color
+    },
+    '& .MuiSlider-track': {
+        backgroundColor: '#212121', // Dark gray track color
+    },
+    '& .MuiSlider-valueLabel': {
+        backgroundColor: '#212121', // Dark gray background for the value label
+        color: 'white', // White text for the value label
+    },
+});
+
+const MFilter = ({ product,sortvalue ,handleSortChange,setSortValue,scrollableDivRef,handleResetFilter}) => {
+    const dispatch = useDispatch()
+    const navigation = useNavigate()
+	const [scrollPosition, setScrollPosition] = useState(0);
+	const [isScrollingUp, setIsScrollingUp] = useState(true);
+  	const [isVisible, setIsVisible] = useState(true);
+	let lastScrollTop = 0;
+
+    function classtoggle(e) {
+        // let foo = document.getElementsByClassName('foo')
+        // let foo1 = document.getElementsByClassName(`filter${e}`)
+        var foo = document.querySelectorAll('.foo')
+        var foo1 = document.querySelector(`.filter${e}`)
+        for (let i = 0; i < foo.length; i++) {
+        elementClass(foo[i]).remove('black')
+        }
+        // elementClass(foo).remove('black')
+        elementClass(foo1).remove('grey')
+        elementClass(foo1).add('black')
+    }
+
+    function datefun(e) {
+        let url = window.location.search
+        if (url.includes('?')) {
+        if (url.includes('date')) {
+            if (url.includes('&date')) {
+            let newurl = url.includes(`&date=1`) ? url.replace(`&date=1`, `&date=${e}`) : null
+            let newurl2 = url.includes(`&date=-1`) ? url.replace(`&date=-1`, `&date=${e}`) : null
+            let newurlsuccess = (newurl === null ? newurl2 : newurl)
+            //  window.location = newurlsuccess 
+            // navigation(newurlsuccess)
+            // dispatch(getproduct())
+            }
+            if (url.includes('?date')) {
+            let newurl = url.includes(`?date=1`) ? url.replace(`?date=1`, `?date=${e}`) : null
+            let newurl2 = url.includes(`?date=-1`) ? url.replace(`?date=-1`, `?date=${e}`) : null
+            let newurlsuccess = (newurl === null ? newurl2 : newurl)
+            //  window.location = newurlsuccess
+            // navigation(newurlsuccess)
+            // dispatch(getproduct())
+            }
+        } else {
+            url += `&date=${e}`
+            //  window.location = url
+            // navigation(url)
+            // dispatch(getproduct())
+        }
+        } else {
+        url += `?date=${e}`
+        //   window.location = url
+        // navigation(url)
+        }
+        dispatch(getproduct())
+    }
+
+    function pricefun(e) {
+        let url = window.location.search
+        if (url.includes('?')) {
+            if (url.includes('low')) {
+                if (url.includes('&low')) {
+                    let newurl = url.includes(`&low=1`) ? url.replace(`&low=1`, `&low=${e}`) : null
+                    let newurl2 = url.includes(`&low=-1`) ? url.replace(`&low=-1`, `&low=${e}`) : null
+                    let newurlsuccess = (newurl === null ? newurl2 : newurl)
+                    navigation(newurlsuccess)
+                    dispatch(getproduct())
+                    //  window.location = newurlsuccess 
+                }
+                if (url.includes('?low')) {
+                    let newurl = url.includes(`?low=1`) ? url.replace(`?low=1`, `?low=${e}`) : null
+                    let newurl2 = url.includes(`?low=-1`) ? url.replace(`?low=-1`, `?low=${e}`) : null
+                    let newurlsuccess = (newurl === null ? newurl2 : newurl)
+                    navigation(newurlsuccess)
+                    dispatch(getproduct())
+                    //  window.location = newurlsuccess
+                }
+            } else {
+                let newurl = window.location.search += `&low=${e}`
+                navigation(newurl)
+                dispatch(getproduct())
+                //  url += `&low=${e}`
+                //  Redirect(url)
+                //  window.location = url
+            }
+        } else {
+            //   url += `?low=${e}`
+            navigation(`?low=${e}`)
+            dispatch(getproduct())
+        }
+    }
+
+    const [sortvi, setsortvi] = useState('hidden')
+
+    let category = []
+    let subcategory = []
+    let specialCategory = []
+    let discountedPercentageAmount = [];
+    let size = []
+    let gender = []
+    let color = []
+    let spARRAY = []
+    let onSale = []
+
+    function categoriesarray() {
+        if (product && product.length > 0) {
+            product.forEach(p => {
+				category.push(p.category)
+                if(!category.includes(p.category)){
+                }
+            });
+        }
+    }
+    function setDiscountedPercentage (){
+        if (product && product.length > 0) {
+            product.forEach(p => {
+                if(p.salePrice && p.salePrice > 0){
+                    // let discount = ((p.price - p.salePrice)/p.price) * 100
+                    /* const priceOriginal = p.price;
+                    const salePriceProduct = p.salePrice;
+                    const discountAmount = priceOriginal - salePriceProduct;
+                    const discountPercentage = Math.floor(((discountAmount / priceOriginal) * 100).toFixed(0));
+                    if(!discountedPercentageAmount.includes(discountPercentage)){
+                        discountedPercentageAmount.push(discountPercentage)
+                    } */
+                    const amount = Math.floor(p.DiscountedPercentage);
+					discountedPercentageAmount.push(amount)
+                }
+            });
+        }
+    }
+    function SetOnSale (){
+        if (product && product.length > 0) {
+            product.forEach(p => {
+                if(p.salePrice && p.salePrice > 0){
+					onSale.push(p.salePrice)
+                }
+            });
+        }
+    }
+    function subCategoriesarray() {
+        // console.log("Product: ",product);
+        if (product && product.length > 0) {
+            product.forEach(p => {
+				subcategory.push(p.subCategory)
+            });
+        }
+    }
+    function specialCategoriesarray() {
+        if (product && product.length > 0) {
+            product.forEach(p => {
+                if( p.specialCategory !== "none" && p.specialCategory !== undefined){
+                	specialCategory.push(p.specialCategory)
+                }
+            });
+        }
+    }
+    function sizearray() {
+        if (product && product.length > 0) {
+			product.forEach(p => {
+				p.size.forEach(s => {
+					size.push(s.label);
+				})
+			});
+        }
+    }
+
+    function genderarray() {
+        if (product && product.length > 0) {
+            product.forEach(p => {
+				gender.push(p.gender)
+                if(!gender.includes(p.gender)){
+                }
+            });
+        }
+    }
+
+    function colorarray() {
+        if (product && product.length > 0) {
+            product.forEach(p => {
+                p.AllColors.forEach(c => {
+					color.push(c);
+                });
+            });
+        }
+    }
+
+    function sparray() {
+        product.forEach(p => {
+            spARRAY.push(p.price);
+        });
+        // console.log("Prices: ", spARRAY);
+    }
+    useEffect(()=>{
+        categoriesarray()
+        sizearray();
+        genderarray()
+        colorarray()
+        sparray()
+        specialCategoriesarray();
+        subCategoriesarray();
+        setDiscountedPercentage();
+        SetOnSale()
+    },[product,window.location.href])
+    
+    categoriesarray()
+    sizearray();
+    genderarray()
+    colorarray()
+    sparray()
+    specialCategoriesarray();
+    subCategoriesarray();
+    setDiscountedPercentage();
+    SetOnSale();
+
+    let Categorynewarray = [...new Set(category)];
+    let specialCategoryNewArray = [...new Set(specialCategory)];
+    let discountedPercentageAmountNewArray = [...new Set(discountedPercentageAmount)];
+    let subCategoryNewArray = [...new Set(subcategory)];
+    let gendernewarray = [...new Set(gender)];
+    let colornewarray = [
+    	...new Map(color.map(item => [item.label, item])).values()
+	];
+    let sizenewArray = [...new Set(size)]
+    let sp = [...new Set(spARRAY.sort((a, b) => a - b))];
+
+    // const [price, setPrice] = useState([Math.floor(Math.min(...sp)), Math.floor(Math.max(...sp))])
+    const [price, setPrice] = useState(GetPrice().length > 0 ? GetPrice() : [Math.floor(Math.min(...sp)), Math.floor(Math.max(...sp))])
+    const [MMainlink, setMMainlink] = useState(``)
+    const priceHandler = (event, newPrice)=>{
+        setPrice(newPrice)
+        const url = new URL(window.location.href);
+		const newMinPrice = newPrice[0];
+		const newMaxPrice = newPrice[1];
+		// Check if 'sellingPrice[$gte]' and 'sellingPrice[$lte]' already exist in the URL
+		const existingMinPrice = url.searchParams.get('sellingPrice[$gte]');
+		const existingMaxPrice = url.searchParams.get('sellingPrice[$lte]');
+
+		// If both are already present, replace their values; otherwise, add them
+		if (existingMinPrice && existingMaxPrice) {
+			// If they exist, update the values
+			url.searchParams.set('sellingPrice[$gte]', newMinPrice);
+			url.searchParams.set('sellingPrice[$lte]', newMaxPrice);
+		} else {
+			// If they don't exist, create them
+			url.searchParams.set('sellingPrice[$gte]', newMinPrice);
+			url.searchParams.set('sellingPrice[$lte]', newMaxPrice);
+		}
+
+		// Replace the current URL in the browser with the updated one
+		window.history.replaceState(null, "", url.toString());
+    }
+    function price2fun(e,f){
+        if (MMainlink.includes('?')) {
+            if (MMainlink.includes(`${e}`)) {
+                let newurl = MMainlink.includes(`&sellingPrice[$gte]=${e}&sellingPrice[$lte]=${f}`) ? MMainlink.replace(`&sellingPrice[$gte]=${e}&sellingPrice[$lte]=${f}`,'') : null
+                let newurl2 = MMainlink.replace(`?sellingPrice[$gte]=${e}&sellingPrice[$lte]=${f}`,'')
+                let newurlsuccess =  (newurl === null ? newurl2 : newurl)
+                window.location = newurlsuccess 
+                setMMainlink(newurlsuccess)
+            }else{
+                setMMainlink(`${MMainlink}&sellingPrice[$gte]=${e}&sellingPrice[$lte]=${f}`)
+            }
+        }else{
+            setMMainlink(`${MMainlink}?sellingPrice[$gte]=${e}&sellingPrice[$lte]=${f}`)
+        }
+    }
+    function onSaleFun() {
+        let url = new URL(window.location.href);
+        let onSaleData = url.searchParams.get('onSale');
+        // Check if 'onSale' parameter is present in the URL
+        if (onSaleData === null) {
+            // If 'onSale' doesn't exist, set it to 'true'
+            url.searchParams.append("onSale", 'true');
+        } else if (onSaleData === 'true') {
+            // If 'onSale' exists and is 'true', set it to 'false'
+            url.searchParams.set("onSale", 'false');
+        } else {
+            // If 'onSale' exists and is not 'true', set it to 'true'
+            url.searchParams.set("onSale", 'true');
+        }
+
+        // Update the URL without reloading the page
+        window.history.replaceState(null, "", url.toString());
+    }
+
+    function genderfun(e) {
+        let url = new URL(window.location.href);
+
+        // Get the current 'subcategory' array from the URL (if any)
+        let selectedSubcategories = url.searchParams.getAll('gender'); // This will return an array
+    
+        // Check if the subcategory is already in the array
+        const isSelected = selectedSubcategories.includes(e);
+    
+        if (isSelected) {
+            // If the subcategory is already selected, remove it from the array
+            selectedSubcategories = selectedSubcategories.filter(sub => sub !== e);
+        } else {
+            // If the subcategory is not selected, add it to the array
+            selectedSubcategories.push(e);
+        }
+    
+        // Clear the existing 'subcategory' parameters and append the updated array
+        url.searchParams.delete('gender');
+        selectedSubcategories.forEach(sub => {
+            url.searchParams.append('gender', sub);
+        });
+    
+        // Update the URL in the browser's address bar without reloading the page
+        window.history.replaceState(null, "", url.toString());
+    }
+    function discountedAmountfun(e) {
+        let url = new URL(window.location.href);
+    
+        // Get the current 'discountedAmount' value from the URL (if any)
+        let selectedDiscountedAmount = url.searchParams.get('discountedAmount'); // This will return a single string, not an array
+        
+        // Set the new value for 'discountedAmount' query parameter
+        if (selectedDiscountedAmount === e) {
+            // If the selected value is already in the URL, remove it (deselect it)
+            url.searchParams.delete('discountedAmount');
+        } else {
+            // Otherwise, set the selected value
+            url.searchParams.set('discountedAmount', e);
+        }
+    
+        // Update the URL in the browser's address bar without reloading the page
+        window.history.replaceState(null, "", url.toString());
+    }
+    
+    function sizefun(e) {
+        let url = new URL(window.location.href);
+
+        // Get the current 'subcategory' array from the URL (if any)
+        let selectedSubcategories = url.searchParams.getAll('size'); // This will return an array
+    
+        // Check if the subcategory is already in the array
+        const isSelected = selectedSubcategories.includes(e);
+    
+        if (isSelected) {
+            // If the subcategory is already selected, remove it from the array
+            selectedSubcategories = selectedSubcategories.filter(sub => sub !== e);
+        } else {
+            // If the subcategory is not selected, add it to the array
+            selectedSubcategories.push(e);
+        }
+    
+        // Clear the existing 'subcategory' parameters and append the updated array
+        url.searchParams.delete('size');
+        selectedSubcategories.forEach(sub => {
+            url.searchParams.append('size', sub);
+        });
+    
+        // Update the URL in the browser's address bar without reloading the page
+        window.history.replaceState(null, "", url.toString());
+    }
+    function categoryfun(e) {
+		let url = new URL(window.location.href);
+
+        // Get the current 'subcategory' array from the URL (if any)
+        let selectedSubcategories = url.searchParams.getAll('category'); // This will return an array
+    
+        // Check if the subcategory is already in the array
+        const isSelected = selectedSubcategories.includes(e);
+    
+        if (isSelected) {
+            // If the subcategory is already selected, remove it from the array
+            selectedSubcategories = selectedSubcategories.filter(sub => sub !== e);
+        } else {
+            // If the subcategory is not selected, add it to the array
+            selectedSubcategories.push(e);
+        }
+    
+        // Clear the existing 'subcategory' parameters and append the updated array
+        url.searchParams.delete('category');
+        selectedSubcategories.forEach(sub => {
+            url.searchParams.append('category', sub);
+        });
+    
+        // Update the URL in the browser's address bar without reloading the page
+        window.history.replaceState(null, "", url.toString());
+	}
+
+    function subCategoryfun(e) {
+        let url = new URL(window.location.href);
+    
+        // Get the current 'subcategory' array from the URL (if any)
+        let selectedSubcategories = url.searchParams.getAll('subcategory'); // This will return an array
+    
+        // Check if the subcategory is already in the array
+        const isSelected = selectedSubcategories.includes(e);
+    
+        if (isSelected) {
+            // If the subcategory is already selected, remove it from the array
+            selectedSubcategories = selectedSubcategories.filter(sub => sub !== e);
+        } else {
+            // If the subcategory is not selected, add it to the array
+            selectedSubcategories.push(e);
+        }
+    
+        // Clear the existing 'subcategory' parameters and append the updated array
+        url.searchParams.delete('subcategory');
+        selectedSubcategories.forEach(sub => {
+            url.searchParams.append('subcategory', sub);
+        });
+    
+        // Update the URL in the browser's address bar without reloading the page
+        window.history.replaceState(null, "", url.toString());
+    }
+    function specialCategoryfun(e) {
+        let url = new URL(window.location.href);
+
+        // Get the current 'subcategory' array from the URL (if any)
+        let selectedSpecialCategory = url.searchParams.getAll('specialCategory'); // This will return an array
+    
+        // Check if the subcategory is already in the array
+        const isSelected = selectedSpecialCategory.includes(e);
+    
+        if (isSelected) {
+            // If the subcategory is already selected, remove it from the array
+            selectedSpecialCategory = selectedSpecialCategory.filter(sub => sub !== e);
+        } else {
+            // If the subcategory is not selected, add it to the array
+            selectedSpecialCategory.push(e);
+        }
+    
+        // Clear the existing 'subcategory' parameters and append the updated array
+        url.searchParams.delete('specialCategory');
+        selectedSpecialCategory.forEach(sub => {
+            url.searchParams.append('specialCategory', sub);
+        });
+    
+        // Update the URL in the browser's address bar without reloading the page
+        window.history.replaceState(null, "", url.toString());
+    }
+
+    function colorfun(colorHex) {
+		let url = new URL(window.location.href);
+
+        // Get the current 'subcategory' array from the URL (if any)
+        let selectColor = url.searchParams.getAll('color'); // This will return an array
+    
+        // Check if the subcategory is already in the array
+        const isSelected = selectColor.includes(colorHex);
+    
+        if (isSelected) {
+            // If the subcategory is already selected, remove it from the array
+            selectColor = selectColor.filter(col => col !== colorHex);
+        } else {
+            // If the subcategory is not selected, add it to the array
+            selectColor.push(colorHex);
+        }
+    
+        // Clear the existing 'subcategory' parameters and append the updated array
+        url.searchParams.delete('color');
+        selectColor.forEach(col => {
+            url.searchParams.append('color', col);
+        });
+    
+        // Update the URL in the browser's address bar without reloading the page
+        window.history.replaceState(null, "", url.toString());
+	}
+
+
+    function addclass1(e) {
+        let f = e.replace(/ /g, "").replace(/&/g, "_and_").replace(/=/g, "_equals_");
+        var font = document.querySelector(`.font${f}`)
+
+        elementClass(font).toggle('fontbold')
+
+
+    }
+    function addclass1Discounted(e) {
+        let f = e.replace(/ /g, "").replace(/&/g, "_and_").replace(/=/g, "_equals_");;
+        var font = document.querySelector(`.font${f}`)
+
+        elementClass(font).toggle('fontbold')
+
+
+    }
+    function addclassColor1(e) {
+        let f = e.replace(/ /g, "").replace(/&/g, "_and_").replace(/=/g, "_equals_");
+        // Escape '#' for use in querySelector
+        f = f.replace('#', '\\#');
+        var font = document.querySelector(`.font${f}`)
+
+        elementClass(font).toggle('fontbold')
+
+
+    }
+    function addclass2(e) {
+        let f = e.replace(/ /g, "").replace(/&/g, "_and_").replace(/=/g, "_equals_");
+        var tick = document.querySelector(`.tick${f}`)
+        elementClass(tick).toggle('tickcolor')
+    }
+    function addclass2Discounted(e) {
+        let f = e;
+        var tick = document.querySelector(`.tick${f}`)
+        elementClass(tick).toggle('tickcolor')
+    }
+    function addcolorclass(e) {
+        let f = e.replace(/ /g, "").replace(/&/g, "_and_").replace(/=/g, "_equals_");
+        // Escape '#' for use in querySelector
+        f = f.replace('#', '\\#');
+        var tick = document.querySelector(`.tick${f}`); // Query the element with the correct class name
+        elementClass(tick).toggle('tickcolor'); // Toggle 'tickcolor' class on the found element
+    }
+
+    function addclass3(e) {
+        var ulco = document.querySelectorAll('.ulco')
+        var ul = document.querySelector(`.ul${e}`)
+
+        for (let i = 0; i < ulco.length; i++) {
+        	elementClass(ulco[i]).remove('Dvisibile')
+        }
+        elementClass(ul).add('Dvisibile')
+
+
+    }
+
+    const [filter, setfilter] = useState('hidden')
+
+    function filterdiv() {
+        setfilter(filter === 'hidden' ? 'block' : 'hidden')
+    }
+
+    function reloadproducts() {
+        dispatch(getproduct())
+    }
+	function updateMMainlinkWithPrice(price) {
+		// Parse the URL to get existing query parameters
+		const params = new URLSearchParams(window.location.search);
+
+		// Check if the 'sellingPrice' parameters already exist
+		const existingMinPrice = params.get('sellingPrice[$gte]');
+		const existingMaxPrice = params.get('sellingPrice[$lte]');
+
+		// Construct the new sellingPrice parameters
+		const newMinPrice = price[0];
+		const newMaxPrice = price[1];
+
+		if (existingMinPrice && existingMaxPrice) {
+			// If 'sellingPrice[$gte]' and 'sellingPrice[$lte]' already exist, update them
+			params.set('sellingPrice[$gte]', newMinPrice);
+			params.set('sellingPrice[$lte]', newMaxPrice);
+		} else {
+			// If they don't exist, add them to the URL
+			params.append('sellingPrice[$gte]', newMinPrice);
+			params.append('sellingPrice[$lte]', newMaxPrice);
+		}
+
+		// Update the MMainlink with the updated query parameters
+		const newMMainlink = MMainlink.includes('?') ? `${MMainlink}&${params.toString()}` : `${MMainlink}?${params.toString()}`;
+		
+		setMMainlink(newMMainlink);
+	}
+
+
+    useEffect(() => {
+		const handleScroll = () => {
+			if (scrollableDivRef.current) {
+				const currentScrollTop = scrollableDivRef.current.scrollTop;
+
+				// Determine scroll direction
+				if (currentScrollTop < lastScrollTop) {
+                    // Scrolling Up
+                    setIsScrollingUp(true);
+                    setIsVisible(true); // Show the div
+				} else {
+                    // Scrolling Down
+                    setIsScrollingUp(false);
+                    setIsVisible(false); // Hide the div
+				}
+
+				// Update the last scroll position
+				lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+
+				// Update the current scroll position
+				setScrollPosition(currentScrollTop);
+			}
+		};
+
+		const divElement = scrollableDivRef.current;
+		divElement.addEventListener('scroll', handleScroll);
+
+		return () => {
+			divElement.removeEventListener('scroll', handleScroll); // Clean up the event listener
+		};
+	}, []);
+
+    function clearall() {
+        setMMainlink('')
+        setfilter(filter === 'hidden' ? 'block' : 'hidden')
+        navigation('/products')
+        reloadproducts()
+		handleResetFilter();
+    }
+	const getIconsBySortingName = (name)=>{
+		switch (name) {
+			case 'What`s New':
+				return <AiOutlineFire className='text-xl mr-2'/>
+			case 'Popularity':
+				return <AiOutlineStar className='text-xl mr-2'/>
+			case 'A-Z':
+				return <FaSortAlphaDown className='text-xl mr-2'/>
+			case 'Z-A':
+				return <FaSortAlphaDownAlt className='text-xl mr-2'/>
+			case 'Better Discount':
+				return <FaPercent className='text-xl mr-2'/>
+			case 'Price: Low To High':
+				return <BsSortUp className='text-xl mr-2'/>
+			case 'Price: High To Low':
+				return <BsSortDown className='text-xl mr-2'/>
+			case 'Rating: High To Low':
+				return <ArrowDown10 className='text-xl mr-2'/>
+			case 'Rating: Low To High':
+				return <ArrowDown01 className='text-xl mr-2'/>
+			default:
+				return null;
+		}
+	}
+    return (
+        <Fragment>
+			<div
+				className={`hidden font-kumbsan uppercase mobilevisible fixed top-12 transition-all duration-300 
+					${isScrollingUp ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[-100%] pointer-events-none'} 
+					${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} w-full`}
+				>
+				<div className="flex-row flex px-3 bg-white shadow-sm justify-between font-kumbsan font-bold border-b items-center mt-2">
+					{/* Sort Section */}
+					<div
+						className="text-[12px] flex justify-start w-full space-x-2 cursor-pointer bg-white text-center items-center p-3"
+						onClick={() => setsortvi('block')}
+						role="button"
+						aria-label="Sort items"
+					>
+						<ArrowUpDown size={17}/>
+                        <span>Sort</span>
+					</div>
+					
+					{/* Separator */}
+					<span className="absolute h-[24px] border-r-[1px] border-slate-300 top-[33.33%] left-1/2 transform -translate-x-1/2"></span>
+					{/* Filter Section */}
+					<div
+						className="text-[12px] flex justify-end w-full items-right space-x-2 cursor-pointer bg-white text-center p-3"
+						onClick={filterdiv}
+						role="button"
+						aria-label="Filter items"
+					>
+						<Filter size={17}/>
+                        <span>Filter</span>
+					</div>
+
+				</div>
+			</div>
+
+
+			{/* SORT Div ********************************************************************************************************** */}
+
+			<div className={`${sortvi} z-50 bg-[#18181846] w-full h-full fixed top-0`} onClick={() => setsortvi('hidden')}>
+				<div className='absolute bottom-0 h-fit w-full bg-white'>
+					<h1 className="font-semibold text-base py-3 px-6 border-b-[0.5px] border-slate-200" >SORT BY</h1>
+					{getSortingKeyValuePairs() && getSortingKeyValuePairs().map((item, index) => (
+						<Fragment key={index}>
+							<div className={`text-base py-3 px-6 flex justify-start space-x-2 items-center ${item.key === sortvalue ? "bg-neutral-100" : ""} border-opacity-25 px-3`} onClick={() => (handleSortChange(item.value),setSortValue(),setsortvi('hidden'))} >
+								{getIconsBySortingName(item.key)}
+								<span>{item.key}</span>
+							</div>
+							<hr/>
+						</Fragment>
+					))}
+				</div>
+			</div>
+
+			{/* FILTER Div ********************************************************************************************************** */}
+
+			<div className={`${filter} z-50 bg-white w-full h-full fixed top-0`}>
+				<h1 className='w-full px-8 font-semibold text-base pt-3 pb-6 border-b-[1px] relative'>FILTERS {document.URL.includes('?') && <span className='absolute right-8 text-gray-700' onClick={clearall}>CLEAR ALL</span>} </h1>
+				<div className='grid grid-cols-12 h-[93%]'>
+					<div className='col-span-4 h-full text-[8px] font-normal md:text-sm'>
+						<h1 className={`filter1 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] black`} onClick={() => (classtoggle(1), addclass3(1))}>Gender</h1>
+						<h1 className={`filter2 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] grey`} onClick={() => (classtoggle(2), addclass3(2))}>Categories</h1>
+						<h1 className={`filter3 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] grey`} onClick={() => (classtoggle(3), addclass3(3))}>Sub Categories</h1>
+						<h1 className={`filter4 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] grey`} onClick={() => (classtoggle(4), addclass3(4))}>Size</h1>
+						<h1 className={`filter5 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] grey`} onClick={() => (classtoggle(5), addclass3(5))}>Price</h1>
+						<h1 className={`filter6 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] grey`} onClick={() => (classtoggle(6), addclass3(6))}>Color</h1>
+						{
+							specialCategoryNewArray && specialCategoryNewArray.length > 0 && (
+								<h1 className={`filter7 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] grey`} onClick={() => (classtoggle(7), addclass3(7))}>Special Category</h1>
+							)
+						}
+						{discountedPercentageAmountNewArray && discountedPercentageAmountNewArray.length > 0 && (
+							<h1 className={`filter8 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] grey`} onClick={() => (classtoggle(8), addclass3(8))}>Discount</h1>
+						)}
+						
+						{onSale.length > 0 && (
+							<h1 className={`filter9 foo w-full text-left border-b-[1px] text-sm py-3 pl-3 md:px-8 bg-[#f8f6f6] grey`} onClick={() => (classtoggle(9), addclass3(9))}>On Sale</h1>
+						)}
+					</div>
+
+					<div className='col-span-8'>
+						{/* Gender Filter */}
+						<FilterList
+							items={gendernewarray}
+							selectedItems={gender}
+							onClick={genderfun}
+							addClass1={addclass1}
+							addClass2={addclass2}
+							getCount={(item) => gender.filter((e) => e === item).length}
+							keyPrefix="1"
+						/>
+
+						{/* Categories Filter */}
+						<FilterList
+							items={Categorynewarray}
+							selectedItems={category}
+							onClick={categoryfun}
+							addClass1={addclass1}
+							addClass2={addclass2}
+							getCount={(item) => category.filter((e) => e === item).length}
+							keyPrefix="2"
+						/>
+
+						{/* Sub Categories */}
+						<FilterList
+							items={subCategoryNewArray}
+							selectedItems={subcategory}
+							onClick={subCategoryfun}
+							addClass1={addclass1}
+							addClass2={addclass2}
+							getCount={(item) => subcategory.filter((e) => e === item).length}
+							keyPrefix="3"
+						/>
+
+						{/* Size Filter */}
+						<FilterList
+							items={sizenewArray}
+							selectedItems={size}
+							onClick={sizefun}
+							addClass1={addclass1}
+							addClass2={addclass2}
+							getCount={(item) => size.filter((e) => e === item).length}
+							keyPrefix="4"
+						/>
+						{/* Price filter */}
+						<ul className={`hidden overflow-scroll h-[86%] ulco ul5`}>
+							{
+								sp &&
+									<div className='mt-10 ml-8 mr-8'>
+										<h1 className='text-base text-slate-900 font1'>&#x20B9; {price[0]} - &#x20B9;{price[1]}</h1>
+										<CustomSlider
+											value={price}
+											onChange={priceHandler}
+											valueLabelDisplay="auto"
+											color='secondary'
+											aria-labelledby="range-slider"
+											min={Math.floor(Math.min(...sp))}
+											max={Math.floor(Math.max(...sp))}
+										/>
+									</div>
+							}
+						</ul>
+
+						{/* Color Filter */}
+						<FilterList
+							items={colornewarray}
+							selectedItems={color}
+							onClick={(label) => colorfun(label.label)}
+							addClass1={(val)=> addclassColor1(val.label)}
+							addClass2={(val)=> addcolorclass(val.label)}
+							getCount={(item) => color.filter((e) => e.label === item.label).length}
+							keyPrefix="6"
+							type="color"
+						/>
+						{/* Special Category */}
+						{specialCategoryNewArray?.length > 0 && (
+							<FilterList
+								items={specialCategoryNewArray}
+								selectedItems={specialCategory}
+								onClick={specialCategoryfun}
+								addClass1={addclass1}
+								addClass2={addclass2}
+								getCount={(item) => specialCategory.filter((e) => e === item).length}
+								keyPrefix="7"
+							/>
+						)}
+
+						{/* Discounted Amount Filter */}
+						{discountedPercentageAmountNewArray?.length > 0 && (
+							<FilterList
+								items={discountedPercentageAmountNewArray.sort((a,b)=> a - b)}
+								selectedItems={discountedPercentageAmount}
+								onClick={discountedAmountfun}
+								addClass1={addclass1Discounted}
+								addClass2={addclass2Discounted}
+								keyPrefix="8"
+								getLabel={(e) => `Up to ${e} % OFF`}
+								getCount={(item) => discountedPercentageAmount.filter((e) => e === item).length}
+							/>
+						)}
+					</div>
+
+				</div>
+
+				<div className='grid grid-cols-12 w-full  bg-white py-3 border-t-[0.5px] border-slate-200 absolute bottom-0 h-[7%]'>
+					<div className="col-span-6 text-lg flex justify-center items-center " onClick={filterdiv}>
+						CLOSE
+					</div>
+					<div className="col-span-6 text-lg flex justify-center text-center text-gray-900 " 
+						onClick={() => (setMMainlink(MMainlink.includes('?') ?`${MMainlink}&sellingPrice[$gte]=${price[0]}&sellingPrice[$lte]=${price[1]}` : `${MMainlink}?sellingPrice[$gte]=${price[0]}&sellingPrice[$lte]=${price[1]}`)
+						,filterdiv(), reloadproducts() )}>
+							<span>
+								APPLY
+							</span>
+						</div>
+					<span className='absolute h-[24px] border-r-[1px] border-slate-300 justify-self-center top-[33.33%]'></span>
+				</div>
+			</div>
+        </Fragment>
+    )
+}
+
+const GetPrice = ()=>{
+    const url = new URL(window.location.href);
+    const urlMinPrice = url.searchParams.get('sellingPrice[$gte]');
+    const urlMaxPrice = url.searchParams.get('sellingPrice[$lte]');
+    
+    if (urlMinPrice && urlMaxPrice) {
+        return [Number(urlMinPrice), Number(urlMaxPrice)]
+    }
+    return [];
+}
+
+const FilterList = ({ 
+	items = [], 
+	selectedItems = [], 
+	onClick, 
+	addClass1, 
+	addClass2, 
+	keyPrefix, 
+	type = 'text', 
+	getLabel = (e) => e, 
+	getCount = (item) => 0,
+}) => {
+	return (
+		<ul className={`hidden Dvisibile overflow-scroll h-[86%] ulco ul${keyPrefix}`}>
+			{
+				items.map((e, i) => {
+				const key = `${keyPrefix}_${i}`;
+
+				const classSuffix = typeof e === 'string' ? 
+					e.replace(/ /g, "").replace(/&/g, "_and_").replace(/=/g, "_equals_") :
+					e.label.replace(/ /g, "");
+					return (
+						<li key={key}
+							className={`flex items-center ml-4 mr-4 py-[16px] border-b-[1px] text-slate-700 font${classSuffix} relative`}
+							onClick={() => {
+								onClick(e);
+								addClass1(e);
+								addClass2(e);
+							}}
+						>
+							<span className={`rightdiv mr-4 tick${classSuffix}`}></span>
+
+								{type === 'color' ? (
+									<div className='gap-2 flex'>
+										<div className='w-6 h-6 rounded-full' style={{ backgroundColor: e.label }} />
+										<span className={`text-[13px]`}>{e.name}</span>
+									</div>
+								) : (
+									<span className={`text-sm`}>{capitalizeFirstLetterOfEachWord(getLabel(e))}</span>
+								)}
+							
+							<span className={`absolute right-6 text-xs`}>{getCount(e)}</span>
+						</li>
+					);
+				})
+			}
+		</ul>
+	);
+};
+
+
+export default MFilter

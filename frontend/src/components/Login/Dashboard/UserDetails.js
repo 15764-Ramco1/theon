@@ -1,0 +1,320 @@
+import React, { Fragment, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { updateuser } from "../../../action/useraction";
+import { Calendar, Edit, Mail, MapPin, Phone, Trash, Trash2Icon, User } from "lucide-react";
+import { FaMars, FaVenus } from "react-icons/fa";
+import { BASE_API_URL, headerConfig } from "../../../config";
+import axios from "axios";
+import { useSettingsContext } from "../../../Contaxt/SettingsContext";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useServerAuth } from "../../../Contaxt/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Input } from "@mui/material";
+import { MdRestartAlt, MdRestore } from "react-icons/md";
+
+const EditableField = ({
+	label,
+	name,
+	value,
+	onChange,
+	isEditing,
+	Icon,
+	maxLength = 500,
+}) => {
+	console.log("value:",name, value);
+	return (
+		<div className="bg-gray-50 border-2 p-4 w-full rounded-lg">
+			<div className="flex justify-start space-x-4 items-center relative overflow-x-auto">
+				<Icon className="text-gray-500" size={20} />
+				<label className="font-semibold text-lg sm:text-base text-gray-700">{label}:</label>
+				{isEditing && name !== 'email' && name !== 'gender' ? (
+					<Input
+						type={name === "DOB" ? "date" : name === 'phoneNumber' ? "number":"text"} // Automatically adjusts input type for dob
+						name={name}
+						maxLength={maxLength}
+						value={value}
+						onChange={onChange}
+						className="border px-3 py-2 rounded-md w-full sm:w-80"
+					/>
+				) : (
+					<span className="text-lg sm:text-base text-gray-800">
+						{label === 'Date of Birth' ? new Date(value).toLocaleDateString() : value}
+					</span>
+				)}
+			</div>
+		</div>
+
+	);
+};
+
+const UserDetails = () => {
+	const navigate = useNavigate();
+	const[originalUser,setOriginalUser] = useState(null);
+	const dispatch = useDispatch();
+	const{user, checkAuthUser} = useServerAuth();
+	const[isLoadingImage,setImageLoading] = useState(false);
+	const {checkAndCreateToast} = useSettingsContext();
+	const [editedUser, setEditedUser] = useState(null);
+	const [isEditingAll, setIsEditingAll] = useState(false); // Flag to toggle editing for all fields
+	const [tempValue, setTempValue] = useState(""); // Temporary value for input
+	const [profilePic, setProfilePic] = useState(user.user?.profilePic || ""); // Store Profile Pic URL
+
+	const handleUploadImage = async (file) => {
+        try {
+            const formData = new FormData();
+            formData.append('my_file', file);
+            const res = await axios.post(`${BASE_API_URL}/admin/upload-image`,formData,headerConfig());
+			if(res.data?.result){
+				return res.data?.result;
+			}
+            checkAndCreateToast('success',"Image Loaded successfully");
+            return '';
+        } catch (error) {
+            console.error('An error occurred while uploading: ',error);
+            // Check if the error is a response error (status codes outside 2xx range)
+            if (error.response) {
+                // The server responded with a status other than 2xx
+                // console.log('Error Status Code:', error.response.status);
+                // console.log('Error Data:', error.response.data); // The JSON error message from the server
+                // console.log('Error Headers:', error.response.headers);
+                checkAndCreateToast("error","Error uploading files: " + error.response.data.message);
+            } else if (error.request) {
+                // The request was made but no response was received
+                console.log('No response received:', error.request);
+                // toast.error("No response received while uploading files");
+            } else {
+                // Something happened in setting up the request that triggered an error
+                console.log('Error Message:', error.message);
+            }
+			return '';
+        }
+        
+    }
+	const handleInputChange = (e) => {
+		const { name, value } = e.target;
+		setEditedUser((prevState) => ({
+			...prevState,
+			[name]: value,
+		}));
+		console.log("Edited User:", editedUser);
+	};
+	const handleProfilePicChange = async (e) => {
+		setImageLoading(true);
+		const file = e.target.files[0];
+		if (file) {
+			const newProfileImage = await handleUploadImage(file);
+			if(newProfileImage){
+				handleInputChange({target:{name:'profilePic',value:newProfileImage}});
+				// await dispatch(updateuser({...editedUser,profilePic:newProfileImage}));
+				// setProfilePic(newProfileImage);
+				setImageLoading(false);
+			}else{
+				setImageLoading(false);
+			}
+		}else{
+			setImageLoading(false);
+		}
+	};
+
+	const handleSave = async () => {
+		setIsEditingAll(false);
+		const digitsOnly = editedUser?.phoneNumber.replace(/\D/g, '');
+
+		// Check if the length is greater than 10
+		if (digitsOnly.length !== 10) {
+			// console.log("Phone number is greater than 10 digits.");
+			checkAndCreateToast('error', 'Phone number should be 10 digits or fewer!');
+			return;
+		}
+		await dispatch(updateuser(editedUser));
+		await checkAuthUser();
+		checkAndCreateToast('success','Profile Updated Successfully!');
+	};
+
+	const handleCancel =async () => {
+		setIsEditingAll(false);
+		await checkAuthUser();
+		setEditedUser(originalUser); // Revert to original user data
+		setOriginalUser(null);
+		navigate('/dashboard');
+	};
+
+	const handleEditAll = () => {
+		setOriginalUser(editedUser);
+		setIsEditingAll(!isEditingAll);
+	};
+
+
+	useEffect(() => {
+		if(user){
+			setEditedUser(user.user);
+		}else{
+			setEditedUser(null);
+			setOriginalUser(null);
+			navigate('/Login')
+		}
+	}, [user]);
+	return (
+		<div className="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-lg">
+			{/* Profile Picture Section */}
+			<div className="flex justify-center mb-6">
+				<div className="relative">
+					{
+						isLoadingImage ? <div className="w-32 h-32 justify-center flex items-center bg-opacity-40 rounded-full bg-gray-300 border border-gray-300">
+							<div className="w-6 h-6 border-4 border-t-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+						</div>:(
+							<LazyLoadImage
+								effect='blur'
+								useIntersectionObserver
+									wrapperProps={{
+									// If you need to, you can tweak the effect transition using the wrapper style.
+									style: {transitionDelay: "1s"},
+								}}
+								placeholder = {<div className="w-full h-full bg-gray-800 animate-pulse"></div>}	
+								src={profilePic || editedUser?.profilePic || `https://avatar.iran.liara.run/username?username=${editedUser?.name.replace(/ /g, '-')}`} // Fallback to default image if no profile picture
+								alt="Profile"
+								className="w-32 h-32 rounded-full object-cover border-2 border-gray-800"
+							/>
+						)
+					}
+					{
+						isEditingAll && <button
+							disabled = {isLoadingImage}
+							onClick={() => document.getElementById("profile-pic-input").click()}
+							className="absolute bottom-0 right-0 z-20 bg-gray-500 text-white rounded-full p-2 hover:bg-gray-600 transition"
+						>
+							<Edit size={16} />
+						</button>
+					}
+					
+					{
+						isEditingAll && editedUser?.profilePic !== '' && <button
+							onClick={() => (handleInputChange({ target: { name: 'profilePic', value: ''} }), setProfilePic(null))}
+							// className="w-32 h-32 rounded-full absolute bottom-0 right-0 justify-center items-center flex object-cover border-2 z-10 bg-gray-900 bg-opacity-80"
+							className="absolute top-0 left-0 z-20 bg-gray-500 text-white rounded-full p-2 hover:bg-gray-600 transition"
+						>
+							<Trash2Icon size={16} color="white" fill="red"/>
+						</button>
+					}
+					<input
+						disabled = {isLoadingImage}
+						type="file"
+						id="profile-pic-input"
+						className="hidden"
+						accept="image/*"
+						onChange={handleProfilePicChange}
+					/>
+				</div>
+			</div>
+
+			{/* Header Section */}
+			<div className="text-center mb-6">
+				<h2 className="text-3xl sm:text-2xl font-bold text-gray-800">{editedUser?.name}</h2>
+				<p className="text-gray-500 text-sm sm:text-base">{editedUser?.email}</p>
+			</div>
+
+			{/* "Edit All" Button */}
+			{!isEditingAll && (
+				<div className="flex justify-end mb-4">
+					<button
+						className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+						onClick={handleEditAll}
+					>
+						<Edit />
+					</button>
+				</div>
+			)}
+
+			{/* Editable Fields */}
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+				<EditableField
+					label="Name"
+					name="name"
+					value={editedUser?.name}
+					onChange={handleInputChange}
+					isEditing={isEditingAll}
+					setTempValue={setTempValue}
+					tempValue={tempValue}
+					Icon={User}
+				/>
+
+				<EditableField
+					label="Email"
+					name="email"
+					value={editedUser?.email}
+					onChange={handleInputChange}
+					isEditing={isEditingAll}
+					setTempValue={setTempValue}
+					tempValue={tempValue}
+					Icon={Mail}
+				/>
+			</div>
+
+			<div className="space-y-6 mb-8">
+				<EditableField
+					label="Phone"
+					name="phoneNumber"
+					value={editedUser?.phoneNumber}
+					onChange={handleInputChange}
+					isEditing={isEditingAll}
+					setTempValue={setTempValue}
+					tempValue={tempValue}
+					Icon={Phone}
+					maxLength = {10}
+				/>
+
+				<EditableField
+					label="Gender"
+					name="gender"
+					value={editedUser?.gender}
+					onChange={handleInputChange}
+					isEditing={isEditingAll}
+					setTempValue={setTempValue}
+					tempValue={tempValue}
+					Icon={editedUser?.gender === "Male" ? FaMars : FaVenus}
+				/>
+				<EditableField
+					label="Country"
+					name="country"
+					value={"India"}
+					onChange={handleInputChange}
+					isEditing={isEditingAll}
+					setTempValue={setTempValue}
+					tempValue={tempValue}
+					Icon={MapPin}
+				/>
+
+				<EditableField
+					label="Date of Birth"
+					name="DOB"
+					value={editedUser?.DOB}
+					onChange={handleInputChange}
+					isEditing={isEditingAll}
+					setTempValue={setTempValue}
+					tempValue={tempValue}
+					Icon={Calendar}
+				/>
+			</div>
+
+			{/* Save and Cancel buttons */}
+			{isEditingAll && (
+				<div className="mt-6 flex flex-col sm:flex-row justify-center items-center space-x-0 sm:space-x-6">
+					<button
+						className="bg-black w-full sm:w-[48%] text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+						onClick={handleSave}
+					>
+						Save Changes
+					</button>
+					<button
+						className="bg-white text-black w-full sm:w-[48%] px-6 py-3 rounded-lg border-[1px] hover:border-gray-800 border-gray-600 transition-colors mt-4 sm:mt-0"
+						onClick={handleCancel}
+					>
+						Cancel
+					</button>
+				</div>
+			)}
+		</div>
+	);
+};
+
+export default UserDetails;

@@ -1,0 +1,878 @@
+import React, { useEffect, Fragment, useState, CSSProperties, useRef } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { checkPurchasesProductToRate, postRating, singleProduct } from '../../action/productaction';
+import Loader from '../Loader/Loader';
+import './Ppage.css';
+import { Carousel } from 'react-responsive-carousel';
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { BsTag } from 'react-icons/bs';
+import Single_product from '../Product/Single_product';
+import { createbag, createwishlist, getwishlist} from '../../action/orderaction';
+import Footer from '../Footer/Footer';
+import { calculateDiscountPercentage, capitalizeFirstLetterOfEachWord, clothingSizeChartData, formattedSalePrice, getLocalStorageBag, getLocalStorageWishListItem } from '../../config';
+import PincodeChecker from './PincodeChecker';
+import ReactPlayer from 'react-player';
+import { Headphones, Heart, Package, RotateCw, ShoppingBag, ShoppingCart, Tags } from 'lucide-react';
+
+import { useSessionStorage } from '../../Contaxt/SessionStorageContext';
+import { useSettingsContext } from '../../Contaxt/SettingsContext';
+import StarRatingInput from './StarRatingInput';
+import SizeChartModal from './SizeChartModal';
+import BackToTopButton from '../Home/BackToTopButton';
+import { IoIosCopy, IoLogoWhatsapp } from 'react-icons/io';
+import WhatsAppButton from '../Home/WhatsAppButton';
+import { useEncryptionDecryptionContext } from '../../Contaxt/EncryptionContext';
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useServerWishList } from '../../Contaxt/ServerWishListContext';
+import { useServerAuth } from '../../Contaxt/AuthContext';
+
+
+const maxScrollAmount = 1024
+const MPpage = () => {
+	const {decrypt} = useEncryptionDecryptionContext();
+    const {checkAndCreateToast} = useSettingsContext();
+    const navigation = useNavigate();
+    const param = useParams();
+    const dispatch = useDispatch();
+
+
+    const { sessionData,sessionBagData, setWishListProductInfo, setSessionStorageBagListItem} = useSessionStorage();
+    
+    const {wishlist,loadingWishList,bag,bagLoading,fetchBag,fetchWishList} = useServerWishList();
+	const{user} = useServerAuth();
+    const { product, loading, similar } = useSelector((state) => state.Sproduct);
+
+    const[isPostingReview,setIsPostingReview] = useState(false);
+    const [isInWishList, setIsInWishList] = useState(false);
+    const [isInBagList, setIsInBagList] = useState(false);
+    const [currentColor, setCurrentColor] = useState(null);
+    const [currentSize, setCurrentSize] = useState(null);
+    const [selectedColor, setSelectedColor] = useState([]);
+    const [selectedSizeColorImageArray, setSelectedSizeColorImageArray] = useState([]);
+    const[ratingData,setRatingData] = useState(null);
+    const[hasPurchased, setHasPurchased] = useState(false);
+    const [scrollAmount, setScrollAmount] = useState(0);  // To hold the scroll amount
+
+    // useRefs...
+    const divRef = useRef(null);
+    const scrollContainerRef = useRef(null);
+    
+
+    const indicatorStyles: CSSProperties = {
+        background: '#CFCECD',
+        width: 7,
+        height: 7,
+        borderRadius: 50,
+        display: 'inline-block',
+        margin: '0 4px 0 4px',
+    };
+
+    function indicator(onClickHandler, isSelected, index, label) {
+        if (isSelected) {
+            return (
+                <li
+                    style={{ ...indicatorStyles, background: '#1D1616' }}
+                    aria-label={`Selected: ${label} ${index + 1}`}
+                    title={`Selected: ${label} ${index + 1}`}
+                />
+            );
+        }
+        return (
+            <li
+                style={{ ...indicatorStyles }}
+                onClick={onClickHandler}
+                onKeyDown={onClickHandler}
+                value={index}
+                key={index}
+                role="button"
+                tabIndex={0}
+                title={`${label} ${index + 1}`}
+                aria-label={`${label} ${index + 1}`}
+            />
+        );
+    }
+
+    const addToBag = async () => {
+        if (isInBagList) {
+            navigation("/bag");
+            return;
+        }
+        if (!currentColor) {
+            checkAndCreateToast("error", "No Color Selected");
+            return;
+        }
+        if (!currentSize) {
+            checkAndCreateToast("error", "No Size Selected");
+            return;
+        }
+        if(currentSize.quantity <= 0){
+            checkAndCreateToast("error", "Size Out of Stock");
+            return;
+        }
+        if(currentColor.quantity <= 0){
+            checkAndCreateToast("error", "Color Out of Stock");
+            return;
+        }
+        if (user) {
+            const orderData = {
+                productId: decrypt(param.id),
+                quantity: 1,
+                color: currentColor,
+                size: currentSize,
+				isChecked:true,
+            };
+            await dispatch(createbag(orderData));
+			fetchBag();
+        } else {
+            // Add to localStorage logic
+            const orderData = {
+                productId: decrypt(param.id),
+                quantity: 1,
+                color: currentColor,
+                size: currentSize,
+                ProductData: product,
+				isChecked:true,
+            };
+            setSessionStorageBagListItem(orderData, decrypt(param.id));
+        }
+        checkAndCreateToast("success", "Product successfully in Bag");
+        updateButtonStates();
+    };
+    const updateButtonStates = () => {
+        if (user) {
+            // console.log("Updateing wishList: ",wishlist);
+            setIsInWishList(wishlist?.orderItems?.some(w => w.productId?._id === product?._id));
+			const similarProductsInBag = bag?.orderItems?.filter(item => item.productId?._id === product?._id);
+            let isBag = false;
+
+            // If there are similar products in the bag
+            if (similarProductsInBag?.length > 0) {
+                // If current size and color are provided, find the matching product
+                if (currentSize && currentColor) {
+                    const matchingItem = similarProductsInBag.find(item => 
+                        item.color?._id === currentColor?._id && item.size?._id === currentSize?._id
+                    );
+                    // If matching item found, check its isChecked property
+                    if (matchingItem) {
+                        isBag = matchingItem.isChecked;
+                    }
+                } else {
+                    // If no size or color is selected, check if any similar product is checked
+                    isBag = similarProductsInBag.some(item => item.isChecked);
+                }
+            }
+
+            // Set the result in state
+            setIsInBagList(isBag);
+        } else {
+            setIsInWishList(getLocalStorageWishListItem().some(b => b.productId?._id === product?._id));
+			const similarProductsInBag = getLocalStorageBag().filter(item => item.productId === product?._id);
+            let isBag = false;
+
+            // Check if there are matching items in the bag
+            if (similarProductsInBag?.length > 0) {
+                // If current size and color are provided, check for matching items with the size and color
+                if (currentSize && currentColor) {
+                    const matchingItem = similarProductsInBag.find(item => 
+                        item.color?._id === currentColor?._id && item.size?._id === currentSize?._id
+                    );
+                    // If matching item is found, set isBag based on its 'isChecked' status
+                    if (matchingItem) {
+                        isBag = matchingItem.isChecked;
+                    }
+                } else {
+                    // If no size/color is specified, check if any product is checked
+                    isBag = similarProductsInBag.some(item => item.isChecked);
+                }
+            }
+            // Set the result in the state (i.e., update whether the product is in the bag)
+            setIsInBagList(isBag);
+        }
+    };
+    const addToWishList = async () => {
+        if (user) {
+            const response = await dispatch(createwishlist({ productId: decrypt(param.id) }));
+			await fetchWishList();
+            checkAndCreateToast("success", "Wishlist Updated Successfully",3000);
+            if(response){
+                setIsInWishList(response);
+            }
+        } else {
+            setWishListProductInfo(product, decrypt(param.id));
+            checkAndCreateToast("success", "Bag is Updated Successfully",3000);
+            updateButtonStates();
+        }
+    
+    };
+
+    const handleBuyNow = async () => {
+        if (!currentColor) {
+            checkAndCreateToast("error", "No Color Selected");
+            return;
+        }
+        if (!currentSize) {
+            checkAndCreateToast("error", "No Size Selected");
+            return;
+        }
+        try {
+			if(user){
+				const orderData = {
+					// userId: user.id,
+					productId: decrypt(param.id),
+					quantity: 1,
+					color: currentColor,
+					size: currentSize,
+					isChecked:true,
+				};
+				const response = await dispatch(createbag(orderData));
+				console.log("Add To Bag Response: ",response);
+				if(response){
+					setIsInBagList(response);
+					await fetchBag();
+					navigation('/bag/checkout')
+				}
+			}else{
+				// Add to localStorage logic
+				const orderData = {
+					productId: decrypt(param.id),
+					quantity: 1,
+					color: currentColor,
+					size: currentSize,
+					ProductData: product,
+					isChecked:true,
+				};
+				setSessionStorageBagListItem(orderData, decrypt(param.id));
+				navigation('/bag/checkout')
+			}
+        } catch (error) {
+            console.error("Error Adding to Bag: ",error);
+            checkAndCreateToast("success","Error adding to Bag");
+        }
+    }
+
+
+    
+
+    
+	// Method to generate the WhatsApp share link
+	const generateWhatsAppLink = (url) => {
+		const encodedUrl = encodeURIComponent(url); // Encode the URL to make it URL-safe
+		return `https://wa.me/?text=Check%20out%20this%20product!%20${encodedUrl}`;
+	};
+	// Method to handle the sharing
+	const handleShare = () => {
+		const productURL = window.location.href; // Get the active page URL
+		const shareLink = generateWhatsAppLink(productURL); // Generate the WhatsApp sharing URL
+		// Open the WhatsApp share link in a new window or tab
+		window.open(shareLink, "_blank");
+	};
+
+
+	// Handle button click for different share types
+	const HandleOnShareTypeButtonClick = (type) => {
+		switch (type) {
+		case "whatsApp":
+			handleShare();
+			checkAndCreateToast("success", "Sharing The Product On Whatsapp!");
+			break;
+		case "copyUrl":
+			navigator.clipboard.writeText(window.location.href);
+			checkAndCreateToast("success", "Link Copied to Clipboard!");
+			break;
+		}
+	};
+	const handleSetColorImages = (color) => {
+        setSelectedSizeColorImageArray(color.images);
+    };
+    const handleSetNewImageArray = (newSize) => {
+        setCurrentSize(newSize);
+        setSelectedColor(newSize.colors);
+		const isAlreadyPresent = newSize.colors.find(item => item?.label === currentColor?.label);
+		if(!isAlreadyPresent){
+        	setCurrentColor(null);
+		}else{
+			setCurrentColor(isAlreadyPresent);
+		}
+    };
+        
+    useEffect(() => {
+        // Check if the user is logged in and other conditions
+        if (!loadingWishList && !bagLoading) {
+            updateButtonStates();
+        }
+    }, [user, wishlist, bag, product, loadingWishList, sessionData, sessionBagData]);
+    
+    useEffect(() => {
+        // Check if the product exists before processing size/color
+        if (product) {
+            const availableSize = product.size.find(item => item.quantity > 0);
+            
+            if (availableSize) {
+                setSelectedColor(availableSize.colors);
+                const color = availableSize.colors[0];
+                setSelectedSizeColorImageArray(color.images);
+            }
+            
+            checkFetchedIsPurchased(); // Checking purchase status when product is loaded
+            fetchWishList();
+            // dispatch(getwishlist()); // Always fetch wishlist data when the product changes
+        }
+    }, [product, user, dispatch]); // Added user as a dependency for fetching the bag
+    
+    useEffect(() => {
+        // Only call `updateButtonStates` when `currentSize` or `currentColor` change
+        if (currentSize && currentColor) {
+            updateButtonStates();
+        }
+    }, [currentSize, currentColor]);
+
+    const checkFetchedIsPurchased = async ()=>{
+        const didPurchased = await dispatch(checkPurchasesProductToRate({productId:product?._id}))
+        setHasPurchased(didPurchased?.success || false);
+    }
+
+
+	useEffect(()=>{
+		dispatch(singleProduct(decrypt(param.id)));
+	},[dispatch])
+	const PostRating = async (e) => {
+        e.preventDefault();
+    
+        if (!ratingData || !user || !product) {
+            checkAndCreateToast("error", "Missing required information");
+            return;
+        }
+        setIsPostingReview(true);
+        try {
+            // Dispatch actions in parallel if they are independent
+            const ratingPromise = dispatch(postRating({ productId: product?._id, ratingData }));
+            const productPromise = dispatch(singleProduct(decrypt(param.id)));
+            // Wait for both actions to complete
+            await Promise.all([ratingPromise, productPromise]);
+            checkAndCreateToast("success", "Rating Posted Successfully");
+        } catch (error) {
+            console.error("An error occurred while setting the Rating", error);
+            checkAndCreateToast("error", "An error occurred while setting the Rating");
+        } finally {
+            setIsPostingReview(false);
+        }
+    };
+    useEffect(() => {
+        // Fetch the product and reset scroll position on param.id change
+        if (scrollContainerRef.current) {
+			scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+    }, []); // Depend on `param.id` instead of `param` to avoid unnecessary calls
+    
+
+
+    
+
+    // Function to check if the target element is in the viewport
+    const checkIfInViewport = () => {
+        const targetDiv = divRef.current;
+        const scrollContainer = scrollContainerRef.current;
+
+        if (!targetDiv || !scrollContainer) return;
+
+        const rect = targetDiv.getBoundingClientRect();
+        const containerRect = scrollContainer.getBoundingClientRect();
+
+        // Check if the target element is within the container
+
+        // Update scroll position
+        setScrollAmount(scrollContainer.scrollTop);  // Log the current scroll position
+    };
+    const carouselRef = useRef(null); // This is the carousel reference
+
+    // Function to handle wheel event and prevent carousel from scrolling vertically
+    const handleWheel = (event) => {
+        const scrollContainer = scrollContainerRef.current;
+        const carouselContainer = carouselRef.current;
+
+        if (!scrollContainer || !carouselContainer) return;
+
+        // Check if the user is scrolling vertically within the scroll container
+        if (event.deltaY !== 0) {
+            // Allow scroll inside the container
+            if (scrollContainer.scrollTop + scrollContainer.clientHeight === scrollContainer.scrollHeight && event.deltaY > 0) {
+                // Prevent carousel scroll and allow the page to scroll
+                event.stopPropagation();
+                window.scrollBy(0, event.deltaY);  // Scroll window instead
+            } else {
+                // Otherwise, handle scroll normally inside the container
+                scrollContainer.scrollTop += event.deltaY;
+                event.preventDefault(); // Prevent default scroll behavior inside carousel
+            }
+        }
+    };
+    useEffect(() => {
+        // Set up the scroll event listener on the scroll container
+        const scrollContainer = scrollContainerRef.current;
+        if (scrollContainer) {
+            scrollContainer.addEventListener('scroll', checkIfInViewport);
+            scrollContainer.addEventListener('wheel', handleWheel, { passive: false });
+        }
+        // Initial check on mount
+        checkIfInViewport();
+
+        // Cleanup event listener on unmount
+        return () => {
+            if (scrollContainer) {
+                scrollContainer.removeEventListener('scroll', checkIfInViewport);
+                scrollContainer.removeEventListener('wheel', handleWheel);
+            }
+        };
+    }, []);
+    return (
+		<div ref={scrollContainerRef} className="w-screen max-w-screen-2xl font-kumbsan h-screen overflow-y-auto scrollbar overflow-x-hidden scrollbar-track-gray-800 scrollbar-thumb-gray-300">
+			{loading === false ? (
+				<div>
+					{scrollAmount < maxScrollAmount  && <div className={`mobilevisible fixed bottom-0 w-full z-30 hidden`}>
+							<div className='grid grid-cols-12 w-full bg-white border-t-[0.5px] border-slate-200 relative z-10'>
+								<div className="col-span-2 flex justify-center items-center p-1">
+									<button className="bg-gray-100 text-center w-full h-full border-[1px] border-opacity-50 flex justify-center items-center border-gray-400 text-black" onClick={addToWishList}>
+										{loadingWishList ? <div className="w-6 h-6 border-4 border-t-4 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>:<Fragment>
+												{isInWishList ? 
+													(
+														<div className="text-red-500 animate-shine p-1 rounded-full">
+															<Heart size={30} strokeWidth={0} fill="red" className="text-red-500" />
+														</div>
+													) : (
+														<Heart size={30}/>
+													)
+												}
+                                        </Fragment>}
+									</button>
+								</div>
+								<div className="col-span-10 text-lg flex justify-center text-center p-1" >
+									<button className=" font-semibold w-full text-sm p-4 inline-flex items-center justify-center border-white bg-black text-white" onClick={addToBag}>
+										{
+											bagLoading? <div className="w-6 h-6 border-4 border-t-4 border-gray-300 border-t-gray-500 rounded-full animate-spin "></div>:<Fragment>
+												<ShoppingCart className='mr-4' />
+												<span>{isInBagList ? "GO TO BAG":"ADD TO CART"}</span>
+											</Fragment>
+										}
+									</button>
+								</div>
+							</div>
+						</div>
+					}
+					<Carousel
+						ref={carouselRef}
+						showThumbs={false}
+						showStatus={false}
+						showArrows={false}
+						showIndicators={true}
+						swipeable={true}
+						emulateTouch
+						infiniteLoop
+						preventMovementUntilSwipeScrollTolerance
+						renderIndicator={(onClickHandler, isSelected, index, label) =>
+							indicator(onClickHandler, isSelected, index, label)
+						}
+					>
+						{selectedSizeColorImageArray &&
+							selectedSizeColorImageArray.length > 0 &&
+							selectedSizeColorImageArray.map((im, i) => (
+								<div key={i}>
+									{im.url ? (
+									// Check if the file is a video (based on file extension)
+									im.url.endsWith(".mp4") || im.url.endsWith(".mov") || im.url.endsWith(".avi") ? (
+										<div className="relative">
+											{/* <MShareView/> */}
+											<ReactPlayer
+												className="w-full h-full object-contain"
+												url={im.url}
+												loop={true}
+												muted={true}
+												controls={false}
+												playing = {true}
+												width="100%"
+												height="100%"
+											/>
+											{/* <div className="h-[30px] bg-white"></div> */}
+										</div>
+									) : (
+										// Render image using LazyLoadImage
+										<div className="relative">
+											<LazyLoadImage
+												effect="blur"
+												src={im.url}
+												wrapperProps={{
+													// If you need to, you can tweak the effect transition using the wrapper style.
+													style: {transitionDelay: "1s"},
+												}}
+												alt={`product_${i}`}
+												className="w-full h-full object-cover"
+												onContextMenu={(e) => e.preventDefault()}  // Disable right-click
+											/>
+										</div>
+									)
+									) : (
+										// Fallback if there's no URL, display a fallback message or content
+										<div>No media found</div>
+									)}
+								</div>
+							))}
+					</Carousel>
+					<div className="bg-white p-4">
+						<div className="border-b border-gray-300 pb-6 pt-4">
+							<h1 className=" text-xl font-semibold text-slate-800">
+								{currentColor?.name} {capitalizeFirstLetterOfEachWord(product?.title)}
+							</h1>
+							<strong className="text-xl text-[#808080e8] font-light">
+								{capitalizeFirstLetterOfEachWord(product?.gender)}
+							</strong>
+						</div>
+						
+						<div className="border-b border-gray-600 pb-2 pt-2 bg-white">
+							<h1 className="text-lg font-semibold text-slate-800">
+								<span className="mr-4 font-bold">
+									₹ {formattedSalePrice(product?.salePrice && product?.salePrice > 0 ? product?.salePrice : product?.price)}
+								</span>
+								{product?.salePrice > 0 && (
+									<Fragment>
+										<span className="line-through mr-4 text-slate-500 font-light">
+											₹ {formattedSalePrice(product?.price)}
+										</span>
+										<span className="text-gray-700">
+											{calculateDiscountPercentage(product.price,product.salePrice)} % OFF
+										</span>
+									</Fragment>
+								)}
+							</h1>
+							<h1 className="text-green-600 font-semibold text-sm mt-1">
+								Inclusive All Taxes.
+							</h1>
+							<div className='w-full flex flex-col justify-start items-center mt-1 space-y-3 mx-auto'>
+								<div className={`w-full flex justify-between items-center`}>
+									<strong className='text-sm text-left font-bold'>Selected Size: <span className='font-normal'>{currentSize?.label}</span>
+									</strong>
+									<SizeChartModal sizeChartData={clothingSizeChartData} />
+								</div>
+								<div className="w-full flex flex-wrap gap-4 justify-start items-start">
+									{product && product.size && product.size.length > 0 && product.size.map((size, index) => {
+										const active = size;
+										return(
+											<div key={`size_${index}_${active._id}`}>
+												<button
+													style={{pointerEvents:active.quantity <= 0 ? 'none':'all'}}
+													className={`flex relative flex-col w-fit h-fit items-center justify-center rounded-full shadow-md gap-2 transition-all focus:outline-none duration-500 border-[1px] border-gray-400 ease-in-out 
+													${currentSize?._id === active?._id ? " bg-black font-extrabold text-lg text-white" : "bg-slate-100 border-2 font-bold text-black"}`}
+													onClick={() => { handleSetNewImageArray(active); }}
+												>
+													{
+														active.quantity <= 0 && <div className='w-full h-full place-self-center justify-end items-center flex flex-col justify-self-center rounded-full absolute inset-0 z-[2px] bg-gray-700 bg-opacity-40'>
+															<div className="text-white w-auto justify-center text-[8px] flex bg-red-600 rounded-lg shadow-lg px-1 whitespace-nowrap">
+																Out of Stock
+															</div>
+														</div>
+													}
+													<div className={`w-10 h-10 p-1 rounded-full flex relative items-center justify-center`}>
+														<span>{active.label}</span>
+													</div>
+												</button>
+											</div>
+										)
+									})}
+								</div>
+							</div>
+							<div className='w-full flex flex-col justify-start items-center mt-3 py-5 space-y-3 mx-auto'>
+								<div className='w-full justify-start items-start flex'><strong className='text-sm text-left font-bold'>Selected Color: <span className='font-normal'>{currentColor?.name}</span></strong></div>
+								<div className="w-full flex flex-wrap gap-4 justify-start items-start">
+									{selectedColor && selectedColor.length > 0 && selectedColor.map((color, index) => {
+										const active = color;
+										return(
+											<div key={`color_${index}_${active._id}`} className='w-fit h-fit'>
+												<button
+													style={{pointerEvents:active.quantity <= 0 ? 'none':'all'}}
+													className={`flex relative flex-col w-full h-full items-center justify-center rounded-full font-bold shadow-md transition-all duration-500 focus:outline-none border-[1px] border-gray-400 ease-in-out 
+													${currentColor?._id === active?._id ? "text-white" : "bg-slate-100 border-2 text-black"}`}
+													onClick={() => {setCurrentColor(active); handleSetColorImages(active); }}
+												>
+													{active.quantity <= 0 && <div className='w-full h-full place-self-center justify-end items-center flex flex-col justify-self-center rounded-full absolute inset-0 bg-gray-700 z-[6] bg-opacity-40'>
+															<div className="text-white w-auto justify-center text-[8px] flex bg-red-600 rounded-lg shadow-lg px-1 whitespace-nowrap">
+																Out of Stock
+															</div>
+														</div>
+													}
+													<button disabled={active.quantity <= 0} className={`w-[40px] h-[40px] relative rounded-full flex ${currentColor?._id === active?._id ? "p-1":""} items-center justify-center`}>
+														<div style={{ backgroundColor: active?.label || active._id}} className='w-full h-full rounded-full'></div>
+													</button>
+												</button>
+											</div>
+										)
+									})}
+								</div>
+							</div>
+							
+						</div>
+                        {
+                            product && <PincodeChecker productId={decrypt(param.id)}/>
+                        }
+						
+						{product && product.bulletPoints && product.bulletPoints.length > 0 && (
+                            <Fragment>
+                            
+                                <div className='mt-2 pt-4 bg-white px-4'>
+                                    <h1 className=' flex items-center mt-2 font-semibold'>BulletPoints <BsTag className='ml-2' /></h1>
+                                </div>
+                                <div className='mt-2 pb-4 pt-4 bg-white px-4'>
+                                    {product.bulletPoints.map((e,index) =>
+										<Fragment key={index}>
+											<h1 className=' flex items-center mt-2 font-semibold'>{e.header}</h1>
+											<span className='mt-4'>
+												<li className='list-disc mt-2'>{e.body}</li>
+											</span>
+										</Fragment>)
+                                    }
+                                </div>
+                            </Fragment>
+                        )}
+						{product && product.tags && product.tags.length > 0 &&  (
+                            <Fragment>
+                                <div className='mt-2 pt-4 bg-white px-4'>
+                                    <h1 className=' flex items-center mt-2 font-semibold'>Tags<Tags className='ml-2' /></h1>
+                                </div>
+                                <div className='mt-2 pb-4 pt-4 flex-row flex flex-wrap gap-2 bg-white px-4'>
+                                    {
+                                        product.tags.map((tag,index) =>
+                                            <ul key={index} className='bg-gray-200 w-fit px-2 py-1 rounded-full'>
+                                                <h1 className='font-medium text-base text-gray-800'>{tag}</h1>
+                                            </ul>
+                                        )
+                                    }
+                                </div>
+                            </Fragment>
+                        )}
+						<div className='mt-2 pb-6 pt-4 relative bg-white px-4'>
+						<h1 className=' flex items-center mt-2 font-semibold'>More Information</h1>
+						<li className='list-none mt-2'>Product Code:&nbsp;{product?.productId}</li>
+						<li className='list-none mt-2'>Seller:&nbsp;<span className='text-[#1e1e1e] font-bold'>{capitalizeFirstLetterOfEachWord(product?.brand).toUpperCase() || ""}</span></li>
+						</div>
+
+						<div className='h-full w-full justify-center items-center flex flex-col space-y-5'>
+							<button className=" font-semibold w-full text-sm p-4 inline-flex items-center justify-center bg-gray-900 text-white rounded-md" onClick={handleBuyNow}>
+								<ShoppingBag className='mr-4' /><span>BUY NOW</span>
+							</button>
+						</div>
+
+						<div  className={`flex-row justify-center items-center flex w-full`}>
+							<div className={`grid grid-cols-12 w-full  relative z-10 ${scrollAmount > maxScrollAmount? "block":"hidden"}`}>
+								<div className="col-span-2 flex justify-center items-center p-1">
+									<button className="bg-gray-50 text-center w-full h-full border-[1px] border-opacity-50 flex justify-center items-center border-gray-400 text-black" onClick={addToWishList}>
+										{
+											loadingWishList ? <Fragment>
+												<div className="w-full h-full border-4 border-t-4 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+											</Fragment>:(
+												<Fragment>
+												{
+													isInWishList ? <div className="text-red-500 animate-shine p-1 rounded-full">
+														<Heart size={30} strokeWidth={0} fill="red" className="text-red-500" />
+													</div>: <Heart size={30}/>
+												}
+												</Fragment>    
+											)
+										}
+									</button>
+								</div>
+								<div ref={divRef} className="col-span-10 text-lg flex justify-center text-center p-1" >
+									<button className=" font-semibold w-full text-sm p-4 inline-flex items-center justify-center border-slate-300 bg-black text-white" onClick={addToBag}>
+										{
+											bagLoading ? <div className="w-6 h-6 border-4 border-t-4 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>:<Fragment>
+												<ShoppingCart className='mr-4' size={30}/>
+												<span>{isInBagList ? "GO TO BAG":"ADD TO CART"}</span>
+											</Fragment>
+										}
+									</button>
+								</div>
+							</div>
+						</div>
+						<div className='w-full flex mt-4'>
+							<div className='w-fit space-x-2 justify-center flex flex-row items-center'>
+								<h1 className="text-gray-500 transition duration-300 text-xl">Share: </h1>
+								<div
+									onClick={() => HandleOnShareTypeButtonClick("whatsApp")}
+									className="text-gray-700 bg-white shadow-md rounded-full p-3 hover:text-blue-600 transition duration-300 text-xl"
+								>
+									<IoLogoWhatsapp />
+								</div>
+								<div
+									onClick={() => HandleOnShareTypeButtonClick("copyUrl")}
+									className="text-gray-700 bg-white shadow-md rounded-full p-3 hover:text-red-600 transition duration-300 text-xl"
+								>
+									<IoIosCopy />
+								</div>
+							</div>
+						</div>
+						<div className="w-full flex flex-col space-y-4 mt-4">
+							<div className="w-full flex flex-col space-y-4 mt-4">
+								<div className="w-full flex flex-row items-center space-x-2 text-xs text-left justify-start">
+									<h1 className="text-gray-500"><RotateCw /></h1>
+									<h1 className="text-gray-500">Return within 7 days of purchase. Duties & taxes are non-refundable.</h1>
+								</div>
+								<div className="w-full flex flex-row items-center space-x-2 text-xs text-left justify-start">
+									<h1 className="text-gray-500"><Package /></h1>
+									<h1 className="text-gray-500">Track your order in real-time with detailed notifications.</h1>
+								</div>
+								<div className="w-full flex flex-row items-center space-x-2 text-xs text-left justify-start">
+									<h1 className="text-gray-500"><Headphones /></h1>
+									<h1 className="text-gray-500">24/7 customer support for any shipping or delivery inquiries.</h1>
+								</div>
+							</div>
+						</div>
+
+						<div className='w-full px-4 md:px-2'>
+							{/* Reviews Section */}
+							<div className='reviews-section'>
+								<h3 className='text-xl md:text-lg font-semibold mt-4 text-center md:text-left'>All Reviews</h3>
+								<div className='reviews-list mt-4 overflow-y-auto h-72'>
+									<div className='reviews-list mt-4 overflow-y-auto'>
+										{product && product.Rating && product.Rating.length > 0 && <ProductReviews reviews={product.Rating}/>}
+									</div>
+								</div>
+								{hasPurchased && <Fragment>
+									{/* Review Input Section */}
+									<div className='w-full flex flex-col justify-start items-center'>
+										<div className='mt-6 w-full max-w-3xl'>
+											<h4 className='text-xl md:text-lg font-semibold text-center md:text-left'>Write a Review</h4>
+
+											<form className='mt-4'>
+												{/* Review Text Input */}
+												<div className='mb-4'>
+													<label htmlFor='reviewText' className='block text-sm font-semibold text-gray-700'>Review Text:</label>
+													<textarea
+														onChange={(e) => setRatingData({...ratingData,comment:e.target.value})}
+														id='reviewText'
+														name='reviewText'
+														rows='4'
+														placeholder='Write your review here...'
+														className='mt-2 p-3 w-full border border-gray-300 rounded-md'
+													/>
+												</div>
+
+												{/* Star Rating Input */}
+												<div className='mb-4'>
+													<StarRatingInput onChangeValue={(value) =>{
+														setRatingData({...ratingData,rating:value})
+													}}/>
+												</div>
+
+												{/* Submit Button */}
+												<div className='flex justify-start'>
+													<button
+														disabled = {isPostingReview}
+														onClick={PostRating}
+														className='bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition-colors'
+													>
+														{isPostingReview ? <div className="w-6 h-6 border-4 border-t-4 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>:<span>Submit Review</span>}
+													</button>
+												</div>
+											</form>
+										</div>
+									</div>
+								</Fragment>}
+							</div>
+							</div>
+							{
+								similar && similar.length > 0 && <div className="mt-2 mb-7 pb-6 pt-4 relative bg-white px-4">
+									<div className='w-full justify-center items-center flex px-1 py-2'>
+										<h1 className=" flex text-center mt-4 font-semibold">SIMILAR PRODUCTS</h1>
+									</div>
+									<div className="overflow-x-auto">
+										<ul className="flex space-x-4 py-2 sm:space-x-6 md:space-x-8 lg:space-x-10">
+											{similar.map((pro,index) => (
+												<li key={pro?._id || index} className="flex-shrink-0 w-[200px] sm:w-[200px] md:w-[250px] lg:w-[300px]">
+													<Single_product pro={pro} onChangeItems = {()=> dispatch(singleProduct(pro?._id))}/>
+												</li>
+											))}
+										</ul>
+									</div>
+								</div>
+							}
+					</div>
+					<Footer />
+				</div>
+			) : (
+				<Loader />
+			)}
+			<BackToTopButton scrollableDivRef={scrollContainerRef} />
+			<WhatsAppButton scrollableDivRef={scrollContainerRef}/>
+		</div>
+    );
+};
+
+const ProductReviews = ({ reviews }) => {
+	const [showMore, setShowMore] = useState(false); // State to toggle the visibility of more reviews
+
+	const handleToggleReviews = () => {
+		setShowMore(!showMore); // Toggle the state between true/false
+	};
+
+	return (
+		<div>
+		<h2 className="text-xl font-kumbsan font-bold mb-4">Product Reviews</h2>
+			<div
+				className={`overflow-y-auto max-h-[400px]`} // Making the review container scrollable
+			>
+				{/* Display only the first 3 reviews or more based on showMore */}
+				{reviews.slice(0, 3).map((review, index) => {
+					const randomStars = review.rating; // Random stars between 1 and 5
+					return (
+						<div key={index} className="review-item mb-4">
+							<div className="flex items-center">
+								<div className="stars">
+									{[...Array(randomStars)].map((_, i) => (
+										<span key={i} className="star text-black hover:-translate-y-2 duration-300 ease-in-out transition-all">★</span>
+									))}
+									{[...Array(5 - randomStars)].map((_, i) => (
+										<span key={i} className="star text-gray-300 hover:-translate-y-2 duration-300 ease-in-out transition-all">★</span>
+									))}
+								</div>
+								<span className="ml-2 text-sm text-gray-500 hover:-translate-y-2 duration-300 ease-in-out transition-all">{randomStars} Stars</span>
+							</div>
+							<p className="text-gray-700 mt-2">{review.comment}</p>
+						</div>
+					);
+				})}
+
+				{/* If showMore is true, display all reviews */}
+				{showMore && reviews.slice(3).map((review, index) => {
+						const randomStars = review.rating;
+						return (
+							<div key={index} className="review-item mb-4">
+									<div className="flex items-center">
+										<div className="stars">
+											{[...Array(randomStars)].map((_, i) => (
+												<span key={i} className="star text-black">★</span>
+											))}
+											{[...Array(5 - randomStars)].map((_, i) => (
+												<span key={i} className="star text-gray-300">★</span>
+											))}
+										</div>
+										<span className="ml-2 text-sm text-gray-500">{randomStars} Stars</span>
+									</div>
+								<p className="text-gray-700 mt-2">{review.comment}</p>
+							</div>
+						);
+					})
+				}
+
+				{/* "View More" / "Show Less" Toggle Button */}
+				<button
+					onClick={handleToggleReviews}
+					className="mt-4 text-blue-500 hover:underline"
+				>
+					{showMore ? 'Show Less' : 'View More'}
+				</button>
+			</div>
+		</div>
+	);
+};
+
+export default MPpage;
+
+
+
