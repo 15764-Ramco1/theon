@@ -271,7 +271,7 @@ const Footer = () => {
 
                 </div>
 
-                <div className="mt-6 h-[100px] justify-end items-center flex flex-col text-center text-gray-500 text-md">
+                <div className="mt-6 h-[100px] justify-end items-center flex flex-col text-center text-gray-400 text-md">
                     <span>&copy; 2025 www.theonu.in. All rights reserved.</span>
                 </div>
             </div>
