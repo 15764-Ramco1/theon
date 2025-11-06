@@ -50,24 +50,28 @@
 }
 
 .search{
-    
+
         display: inline-block;
         font-size: 14px;
         height: 20px;
         line-height: 24px;
         width: 95%;
-        color: #696e79;
+        color: #000000;
         -webkit-box-sizing: content-box;
         box-sizing: content-box;
         padding: 8px 10px 10px;
         margin: 0;
         outline: 0;
-        border: 1px solid #f5f5f6;
+        border: 1px solid #e0e0e0;
         border-radius: 0 4px 4px 0;
         border-left: 0;
-        background: #f5f5f6;
+        background: #ffffff;
         justify-self: center;
-    
+        transition: border-color 0.3s ease;
+}
+
+.search:focus {
+    border-color: #000000;
 }
 .msearch{
     
