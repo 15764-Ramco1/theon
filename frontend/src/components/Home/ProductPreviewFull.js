@@ -202,7 +202,7 @@ const ProductPreviewFull = ({ product ,user}) => {
 	}, [currentSize, currentColor]); */
 
     return (
-        <div className='max-w-screen-2xl font-kumbsan w-full flex flex-col justify-self-center justify-center items-center bg-slate-200'>
+        <div className='max-w-screen-2xl font-kumbsan w-full flex flex-col justify-self-center justify-center items-center bg-white py-8'>
             {/* Preview Headers Section */}
             <div className="min-w-fit flex justify-center items-center gap-3 sm:gap-4 md:gap-5 mb-6 font1 px-6 mt-5 my-2 max-w-full">
                 {previewHeader && previewHeader.length > 0 &&
@@ -216,7 +216,7 @@ const ProductPreviewFull = ({ product ,user}) => {
                                 }
                             }}
                             key={index}
-                            className={`border-2 border-gray-600 border-opacity-70 p-2 sm:p-3 md:p-4 lg:p-4 xl:p-5 px-5 py-2 sm:px-6 sm:py-3 flex items-center justify-center md:w-[130px] lg:w-[150px] xl:w-[180px] 2xl:w-[200px] sm:w-[120px] sm:h-[35px] h-[40px] transform font-kumbsan transition-transform duration-300 ease-out hover:scale-110 cursor-pointer rounded-full ${activePreview === h.id ? 'bg-black text-white' : 'bg-neutral-50'}`}
+                            className={`border-2 border-black p-2 sm:p-3 md:p-4 lg:p-4 xl:p-5 px-5 py-2 sm:px-6 sm:py-3 flex items-center justify-center md:w-[130px] lg:w-[150px] xl:w-[180px] 2xl:w-[200px] sm:w-[120px] sm:h-[35px] h-[40px] transform font-kumbsan transition-all duration-300 ease-out hover:scale-110 cursor-pointer rounded-full ${activePreview === h.id ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'}`}
                         >
                             <span className="inline-block font-medium text-center text-[10px] sm:text-[12px] md:text-[14px] lg:text-[16px] xl:text-[18px] whitespace-nowrap overflow-hidden text-ellipsis">
                                 {h?.title}
@@ -226,16 +226,16 @@ const ProductPreviewFull = ({ product ,user}) => {
                 }
             </div>
             {/* Product Previews Section */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 xl:grid-cols-5 lg:grid-cols-5 2xl:grid-cols-5 justify-center md:px-12 lg:px-12 2xl:px-12 xl:px-12 px-2 gap-2 md:gap-3 items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 justify-center md:px-12 lg:px-12 2xl:px-12 xl:px-12 px-2 gap-4 items-center">
                 {previewProducts && previewProducts.length > 0 &&
                     previewProducts.map((p, index) => {
                         // const p = previewProducts[0];
                         const selectedColor = selectedColors[p._id] || p.AllColors[0]?.images;
                         return (
-                            <div key={`product_${p._id}_${index}`} className={`w-full h-full rounded-md bg-gray-200 relative flex flex-col justify-start items-center hover:shadow-md transition-all duration-300 ease-in-out ${window.screen.width > 1024 ? "hover:scale-105":""}`}>
+                            <div key={`product_${p._id}_${index}`} className={`w-full h-full rounded-lg bg-white border border-[#e0e0e0] relative flex flex-col justify-start items-center hover-lift cursor-pointer overflow-hidden ${window.screen.width > 1024 ? "":"hover:scale-105"}`}>
                                 <HomeProductsPreview product={p} selectedColorImages={selectedColor} user={user}/>
-                                <div className="w-full h-fit p-2 px-3 bg-white flex flex-col justify-center items-start hover:shadow-md space-y-2">
-                                    <h2 className="font1 text-[12px] md:text-base md:font-semibold sm:font-semibold font-normal 2xl:font-semibold xl:font-semibold font-kumbsan text-gray-800 text-left truncate">
+                                <div className="w-full h-fit p-3 px-4 bg-white flex flex-col justify-center items-start space-y-2">
+                                    <h2 className="font1 text-[12px] md:text-base md:font-semibold sm:font-semibold font-normal 2xl:font-semibold xl:font-semibold font-kumbsan text-black text-left truncate">
                                         {p?.title}
                                     </h2>
                                     
