@@ -52,18 +52,18 @@ const ShoppingViewProductTile = ({product,handleGetProductDetails,handleAddToCar
                 </CardContent>
             </div>
             {product?.totalStock > 0 ? (
-                <CardFooter>
+                <CardFooter className="pt-0">
                     <Button
                         disabled={isLoading}
                         onClick={() => handleAddToCart(product._id, product?.totalStock)}
-                        className="w-full text-sm py-2"
+                        className="w-full text-sm py-3 bg-black text-white hover:bg-gray-800 transition-colors duration-300"
                     >
                         {isLoading ? 'Adding.. to Cart' : 'Add to Cart'}
                     </Button>
                 </CardFooter>
             ) : (
-                <CardFooter>
-                    <Button disabled className="w-full text-sm py-2">
+                <CardFooter className="pt-0">
+                    <Button disabled className="w-full text-sm py-3 bg-gray-200 text-gray-500 cursor-not-allowed">
                         Out Of Stock
                     </Button>
                 </CardFooter>
