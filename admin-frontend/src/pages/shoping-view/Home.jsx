@@ -90,22 +90,30 @@ const ShoppingHome = () => {
 	},[dispatch])
     console.log('feature Images Array: ',featuresList);
     return (
-        <div className='flex flex-col w-full min-h-screen mt-10'>
+        <div className='flex flex-col w-full min-h-screen'>
+            {/* Hero Banner */}
+            <HeroBanner />
+
+            {/* Carousel Section */}
             {
                 featuresList && featuresList.length > 0 && <Carousel setCurrentSlide={setCurrentSlide} currentSlide={currentSlide} featuresList={featuresList}/>
             }
-            
-            <div className='columns-1 sm:columns-2 lg:columns-3 py-10 md:py-20 gap-4'>
+
+            {/* Feature Icons Section */}
+            <FeatureIcons />
+
+            {/* Category Images Grid */}
+            <div className='columns-1 sm:columns-2 lg:columns-3 py-10 md:py-20 gap-4 px-4'>
                 {
                     featuresList && featuresList.length && featuresList.map((item, index) => (
-                        <div key={index} onClick={() => handleNavigateToListingPage(item, 'category')} className='mb-4 cursor-pointer break-inside-avoid relative'>
+                        <div key={index} onClick={() => handleNavigateToListingPage(item, 'category')} className='mb-4 cursor-pointer break-inside-avoid relative hover-lift'>
                             <img
                                 src={item.image}
                                 alt='features Images'
                                 className='w-full object-cover rounded-lg'
                             />
                             <span className='absolute bottom-1/3 min-w-1.5 left-1/2 bg-black text-white px-3 py-1 rounded'>{item?.category}</span>
-                            
+
                         </div>
                     ))
                 }
