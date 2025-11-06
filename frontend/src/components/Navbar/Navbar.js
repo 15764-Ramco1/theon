@@ -78,39 +78,39 @@ const Navbar = () => {
         <Fragment>
             <div className="container font-kumbsan sticky top-0 2xl:w-[100%] xl:w-[100%] lg:w-[100%] mx-auto w-screen max-w-[100%] h-[80px] bg-white border-b border-gray-200 contenthide z-40 hover:shadow-md transition-shadow duration-300">
                 <div className='flex-row flex justify-between items-center w-screen h-full'>
-                    <ul className=' h-full flex  font-semibold text-base md:text-[14px] text-[#282c3f] tracking-[.3px] uppercase'>
-                        <Link className='w-max px-3 flex items-stretch hover:animate-vibrateScale' to="/">
+                    <ul className=' h-full flex  font-semibold text-base md:text-[14px] text-black tracking-[.3px] uppercase'>
+                        <Link className='w-max px-3 flex items-stretch hover-scale' to="/">
                             <li className='w-max flex items-stretch'>
-                                
+
                                 <div className='w-auto justify-between items-center h-auto flex-row flex rounded-t'>
-                                    <Link to='/'> <h1 className='text-[35px] py-1 ml-2 font-extrabold font-kumbsan text-center text-gray-800'>On U</h1></Link>
+                                    <Link to='/'> <h1 className='text-[35px] py-1 ml-2 font-extrabold font-kumbsan text-center text-black hover:opacity-80 transition-opacity duration-300'>On U</h1></Link>
                                 </div>
-                                
+
                             </li>
                         </Link>
                     </ul>
                     <div className='h-full font-bold mt-3 w-fit flex flex-row px-5 items-center justify-end'>
-                        <Link onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover:animate-vibrateScale mb-5' to="/">
+                        <Link onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover-scale mb-5 nav-link' to="/">
 							<li className='w-max flex justify-center items-center border-4 border-transparent cursor-pointer'
 							>
-								<h1 className='px-3 text-center  text-slate-800'>HOME</h1>
+								<h1 className='px-3 text-center text-black'>HOME</h1>
 							</li>
                         </Link>
-                        <Link to={"/products"} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover:animate-vibrateScale mb-5'>
+                        <Link to={"/products"} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover-scale mb-5 nav-link'>
                             <li className='w-max flex justify-center items-center border-4 border-transparent cursor-pointer'
                                 onMouseEnter={() => (setMenu2('block'), setShow2(true))} onMouseLeave={() => (setMenu2('hidden'), setShow2(false))}
                             >
-                                <h1 className='px-3 text-center  text-slate-800'>PRODUCTS</h1>
+                                <h1 className='px-3 text-center text-black'>PRODUCTS</h1>
                             </li>
                         </Link>
-                        <Link to={'/about'} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover:animate-vibrateScale mb-5'>
+                        <Link to={'/about'} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover-scale mb-5 nav-link'>
                             <li className='w-max flex justify-center items-center border-4 border-transparent cursor-pointer'>
-                                <h1 className='px-3 text-center  text-slate-800'>ABOUT</h1>
+                                <h1 className='px-3 text-center text-black'>ABOUT</h1>
                             </li>
                         </Link>
-                        <Link to={'/contact'} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover:animate-vibrateScale mb-5'>
+                        <Link to={'/contact'} onClick={()=> setIsSearchVisible(false)} className='w-max px-3 flex items-stretch hover-scale mb-5 nav-link'>
                             <li className='w-max flex justify-center items-center border-4 border-transparent cursor-pointer'>
-                                <h1 className='px-3 text-center  text-slate-800'>CONTACT</h1>
+                                <h1 className='px-3 text-center text-black'>CONTACT</h1>
                             </li>
                         </Link>
                         <div className="flex flex-row w-full h-14 space-x-5 mb-5 mx-4">
